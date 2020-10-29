@@ -1,0 +1,121 @@
+﻿<Window x:Class="Vasilev.SimpleChat.WpfNetCore.Client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:l="clr-namespace:Vasilev.SimpleChat.WpfNetCore.Client"        
+        Title="{Binding Title}" 
+        MinHeight="450" MinWidth="350"
+        xmlns:vm="clr-namespace:Vasilev.SimpleChat.WpfNetCore.Client.ViewModels"  
+        xmlns:cmd="clr-namespace:Vasilev.SimpleChat.WpfNetCore.Client.Infrastructure.Commands"
+        >
+        
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Ctrl" Key="Q" 
+                    Command="{Binding MainMenuViewModel.CloseApplicationCommand}"/>
+    </Window.InputBindings>
+   
+    
+    <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+           
+            <!--Connected-->
+            <StatusBarItem>
+                <TextBlock Text="{Binding Client.Connected, StringFormat=Connected: {0}}"/>
+            </StatusBarItem>
+
+            <!--IP Adress-->
+            <StatusBarItem Margin="20,0,0,0">
+                <TextBlock Text="{Binding Client.Ip, StringFormat=IP: {0}}"/>
+            </StatusBarItem>
+
+            <!--Port-->
+            <StatusBarItem Margin="20,0,0,0">
+                <TextBlock Text="{Binding Client.Port, StringFormat=Port: {0}}"/>
+            </StatusBarItem>
+            
+        </StatusBar>
+
+        <Grid>
+            <Grid.Resources>
+                <DataTemplate x:Key="tbClient">
+                    <TextBlock />
+                </DataTemplate>
+                <DataTemplate x:Key="tbServer">
+                    <TextBlock />
+                </DataTemplate>                
+            </Grid.Resources>
+            
+            <!--USER-->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+
+            <Grid Grid.Row="0" Grid.Column="0"
+                  Margin="3"
+                  >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>      
+                
+                <TextBlock Grid.Column="0"
+                           Text="{Binding Client.UserName, StringFormat=User: {0}}" 
+                           Margin="5"
+                           />
+                <Button Grid.Column="1"
+                        Content="Connect" 
+                        Margin="3"/>
+                <Button Grid.Column="2"
+                        Content="Exit"                         
+                        Command="{Binding CloseApplicationCommand}"
+                        Margin="3"/>
+
+            </Grid>
+
+            <!--HISTORY-->
+            <ListBox Grid.Row="1" 
+                     Margin="3">
+                <ListBoxItem />
+            </ListBox>
+
+            <!--MESSAGE-->
+            <Grid Grid.Row="2"
+                  Margin="3"
+                  >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBox Grid.Column="0" 
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         MaxHeight="65"
+                         Margin="3" 
+                         />
+                <Button Grid.Column="1"
+                        Content="Send"
+                        Margin="3"/>
+            </Grid>
+
+        </Grid>
+    </DockPanel>
+</Window>

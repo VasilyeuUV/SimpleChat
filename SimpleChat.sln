@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vasilev.SimpleChat.ConsNetCore", "Vasilev.SimpleChat.ConsNetCore.csproj", "{414E0074-0820-406C-A19D-9C61AB452912}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vasilev.SimpleChat.ConsNetCore", "Vasilev.SimpleChat.WpfNetCore\Vasilev.SimpleChat.ConsNetCore.csproj", "{CD8C7A74-FB4C-4490-BA8F-6AC903A1818D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vasilev.SimpleChat.ConsNetCore.Server", "..\ChatServer\Vasilev.SimpleChat.ConsNetCore.Server.csproj", "{B61EA376-5615-4C2D-80A5-A65204390464}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vasilev.SimpleChat.WpfNetCore.Client", "Vasilev.SimpleChat.WpfNetCore.Client\Vasilev.SimpleChat.WpfNetCore.Client.csproj", "{68CA6BDA-1770-4B8B-B1C8-3D58E356DDC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vasilev.SimpleChat.WpfNetCore.Client", "..\Vasilev.SimpleChat.WpfNetCore.Client\Vasilev.SimpleChat.WpfNetCore.Client.csproj", "{15C5D05B-4FC3-404C-AA11-4E250CD90E4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vasilev.SimpleChat.ConsNetCore.Server", "Vasilev.SimpleChat.WpfNetCore.Server\Vasilev.SimpleChat.ConsNetCore.Server.csproj", "{89E30A8C-B02D-4721-BD5D-FE7875492FE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,18 +15,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{414E0074-0820-406C-A19D-9C61AB452912}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{414E0074-0820-406C-A19D-9C61AB452912}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{414E0074-0820-406C-A19D-9C61AB452912}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{414E0074-0820-406C-A19D-9C61AB452912}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B61EA376-5615-4C2D-80A5-A65204390464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B61EA376-5615-4C2D-80A5-A65204390464}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B61EA376-5615-4C2D-80A5-A65204390464}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B61EA376-5615-4C2D-80A5-A65204390464}.Release|Any CPU.Build.0 = Release|Any CPU
-		{15C5D05B-4FC3-404C-AA11-4E250CD90E4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{15C5D05B-4FC3-404C-AA11-4E250CD90E4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{15C5D05B-4FC3-404C-AA11-4E250CD90E4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{15C5D05B-4FC3-404C-AA11-4E250CD90E4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD8C7A74-FB4C-4490-BA8F-6AC903A1818D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD8C7A74-FB4C-4490-BA8F-6AC903A1818D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD8C7A74-FB4C-4490-BA8F-6AC903A1818D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD8C7A74-FB4C-4490-BA8F-6AC903A1818D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68CA6BDA-1770-4B8B-B1C8-3D58E356DDC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68CA6BDA-1770-4B8B-B1C8-3D58E356DDC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68CA6BDA-1770-4B8B-B1C8-3D58E356DDC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68CA6BDA-1770-4B8B-B1C8-3D58E356DDC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89E30A8C-B02D-4721-BD5D-FE7875492FE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89E30A8C-B02D-4721-BD5D-FE7875492FE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89E30A8C-B02D-4721-BD5D-FE7875492FE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89E30A8C-B02D-4721-BD5D-FE7875492FE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
