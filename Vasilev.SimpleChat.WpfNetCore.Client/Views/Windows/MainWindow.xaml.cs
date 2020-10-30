@@ -24,5 +24,10 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client
         {
             InitializeComponent();
         }
+
+        private void lbMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            lbMain.ScrollIntoView(lbMain.SelectedItem);
+        }
     }
 }
