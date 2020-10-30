@@ -1,4 +1,5 @@
 ﻿using System;
+using Vasilev.SimpleChat.ConsNetCore.Menu;
 
 namespace SimpleChat
 {
@@ -6,7 +7,7 @@ namespace SimpleChat
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            MenuManager.DisplayMainMenu();
         }
     }
 }
