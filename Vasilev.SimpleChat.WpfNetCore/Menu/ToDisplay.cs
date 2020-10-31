@@ -70,6 +70,5 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
             return Console.ReadKey();
         }
 
-
     }
 }
