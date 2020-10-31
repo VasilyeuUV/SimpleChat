@@ -1,92 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
+using System.Xml.Schema;
+using Vasilev.SimpleChat.ConsNetCore.Menu.Base;
 using Vasilev.SimpleChat.ConsNetCore.Server.Models;
 
 namespace Vasilev.SimpleChat.ConsNetCore.Menu
 {
-    internal static class ServerManager
-    {
-        internal delegate void method();
+    //internal delegate void method();
 
+    internal class ServerManager : MenuBase, IDisposable
+    {     
         private static ServerModel server = null;
 
-        //private static string[] items = {
-        //    "Запустить сервер",
-        //    "Перечень возможных вопросов", 
-        //    "Список присоединенных пользователей", 
-        //    "Остановить сервер", 
-        //    "Назад" 
-        //};
-
-        //private static Dictionary<method, string> methods = new Dictionary<method, string>()
-        //{
-        //    [StartServer] = "Запустить сервер",
-        //    [ViewQuestions] = "Перечень возможных вопросов",
-        //    [ViewClients] = "Список присоединенных пользователей",
-        //    [StopServer] = "Остановить сервер",
-        //    [Back] = "Назад",
-        //};
-
-        private static List<KeyValuePair<method, string>> methods = new List<KeyValuePair<method, string>>()
+        /// <summary>
+        /// CTOR
+        /// </summary>
+        internal ServerManager()
         {
-            new KeyValuePair<method, string>(StartServer, "Запустить сервер"),
-            new KeyValuePair<method, string>(ViewQuestions, "Перечень возможных вопросов"),
-            new KeyValuePair<method, string>(ViewClients, "Список присоединенных пользователей"),
-            new KeyValuePair<method, string>(StopServer, "Остановить сервер"),
-            new KeyValuePair<method, string>(Back, "Назад"),
-        };
-
-        private static KeyValuePair<method, string> _selectedMethod = default;
-
-
-
-
-
-        internal static void DisplayMenu()
-        {
-            ExecuteMenuItemMethod("ОПЕРАЦИИ:", methods);
-        }
-
-        private static void ExecuteMenuItemMethod(string operation, List<KeyValuePair<method, string>> methods)
-        {
-            ConsoleMenu menu = new ConsoleMenu(methods);
-            do
+            _menuName = "СЕРВЕР:";
+            _methods = new List<KeyValuePair<method, string>>()
             {
-                _selectedMethod = menu.Navigate(operation);
-                if (_selectedMethod.Key == methods.Last().Key) { break; }
-                _selectedMethod.Key();
-            } while (true);            
+                new KeyValuePair<method, string>(StartServer, "Запустить сервер"),
+                new KeyValuePair<method, string>(ViewQuestions, "Перечень возможных вопросов"),
+                new KeyValuePair<method, string>(ViewClients, "Список присоединенных пользователей"),
+                new KeyValuePair<method, string>(StopServer, "Остановить сервер"),
+                new KeyValuePair<method, string>(Back, "Назад"),
+            };
         }
-
-        ///// <summary>
-        ///// Select menu item
-        ///// </summary>
-        ///// <param name="operation"></param>
-        ///// <param name="items"></param>
-        ///// <param name="methods"></param>
-        //internal static void SelectMenuItem(string operation, string[] items, method[] methods)
-        //{
-        //    ConsoleMenu menu = new ConsoleMenu(items);
-        //    int menuResult;
-        //    do
-        //    {
-        //        menuResult = menu.PrintMenu(operation);
-        //        Console.WriteLine();
-        //        methods[menuResult]();
-        //    } while (menuResult != items.Length - 1);
-        //}
-
-
-
-
 
         /// <summary>
         /// Possible questions
         /// </summary>
-        private static void ViewQuestions()
+        private void ViewQuestions()
         {
             ToDisplay.ViewTitle(_selectedMethod.Value.ToUpper(), true);
 
@@ -100,7 +45,10 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
             ToDisplay.WaitForContinue();
         }
 
-        private static void ViewClients()
+        /// <summary>
+        /// View active Clients
+        /// </summary>
+        private void ViewClients()
         {
             ToDisplay.ViewTitle(_selectedMethod.Value.ToUpper(), true); 
 
@@ -114,9 +62,6 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
             ToDisplay.WaitForContinue();
         }
 
-
-
-
         /// <summary>
         /// Return to the menu one level higher
         /// </summary>
@@ -128,7 +73,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
         /// <summary>
         /// Start TCP server
         /// </summary>
-        private static void StartServer()
+        private void StartServer()
         {
             if (server != null)
             {
@@ -145,7 +90,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
         /// <summary>
         /// Stop TCP server
         /// </summary>
-        private static void StopServer()
+        private void StopServer()
         {
             if (server == null)
             {
@@ -157,5 +102,32 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
             server = null;
             ToDisplay.WaitForContinue("Сервер остановлен");
         }
+
+
+
+        #region IDISPOSABLE
+
+        private bool _disposed;
+
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing || _disposed) { return; }
+
+            _disposed = true;
+
+            // Освобождение управляемых ресурсов
+            if (server != null) { StopServer(); }
+            _methods.Clear();
+        }
+
+        #endregion
     }
 }

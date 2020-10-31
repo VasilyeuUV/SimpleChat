@@ -7,7 +7,8 @@ namespace SimpleChat
     {
         static void Main(string[] args)
         {
-            MenuManager.DisplayMainMenu();
+            MenuManager mainMenu = new MenuManager();
+            mainMenu.DisplayMenu();
         }
     }
 }

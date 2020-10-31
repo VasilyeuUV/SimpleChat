@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Vasilev.SimpleChat.ConsNetCore.Menu.Base;
 
 namespace Vasilev.SimpleChat.ConsNetCore.Menu
 {
@@ -11,17 +12,14 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
     {
         private delegate int action(int index);
 
-        private List<KeyValuePair<ServerManager.method, string>> _menuItems;
-        private Dictionary<ConsoleKey, action> keyActions = default;
+        //private List<KeyValuePair<method, string>> _menuItems;
+        private Dictionary<ConsoleKey, action> _keyActions = default;
+        private List<KeyValuePair<MenuBase.method, string>> _menuItems;
 
-        /// <summary>
-        /// CTOR
-        /// </summary>
-        /// <param name="methods"></param>
-        public ConsoleMenu(List<KeyValuePair<ServerManager.method, string>> methods)
+        public ConsoleMenu(List<KeyValuePair<MenuBase.method, string>> methods)
         {
-            this._menuItems = methods.ToList();
-            this.keyActions = new Dictionary<ConsoleKey, action>()
+            this._menuItems = methods;
+            this._keyActions = new Dictionary<ConsoleKey, action>()
             {
                 [ConsoleKey.UpArrow] = SelectPrevMenuItem,
                 [ConsoleKey.DownArrow] = SelectNextMenuItem,
@@ -30,26 +28,25 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
             };
         }
 
-        public ConsoleMenu(List<KeyValuePair<MenuManager.method, string>> methods)
-        {
-        }
-
-
         /// <summary>
-        /// 
+        /// Menu navigation
         /// </summary>
-        /// <param name="op"></param>
+        /// <param name="operationName"></param>
         /// <returns></returns>
-        public KeyValuePair<ServerManager.method, string> Navigate(string op)
+        internal KeyValuePair<MenuBase.method, string> Navigate(string operationName)
         {
-            KeyValuePair<ServerManager.method, string> _selectedMenuItem = this._menuItems.First();
+            KeyValuePair<MenuBase.method, string> _selectedMenuItem = this._menuItems.First();
 
             ConsoleKeyInfo key;
             do
             {
-                PrintMenu(op, _selectedMenuItem.Key);
+                PrintMenu(operationName, _selectedMenuItem.Key);
                 key = Console.ReadKey();
-                _selectedMenuItem = _menuItems[keyActions[key.Key](_menuItems.IndexOf(_selectedMenuItem))];
+
+                if (_keyActions.Any(x => x.Key == key.Key))
+                {
+                    _selectedMenuItem = _menuItems[_keyActions[key.Key](_menuItems.IndexOf(_selectedMenuItem))];
+                }
             }
             while (key.Key != ConsoleKey.Enter);
 
@@ -61,7 +58,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
         /// Menu item to Display
         /// </summary>
         /// <param name="op"></param>
-        private void PrintMenu(string op, ServerManager.method key)
+        private void PrintMenu(string op, MenuBase.method key)
         {
             Console.Clear();
 
@@ -80,37 +77,28 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
                 }
                 else { Console.WriteLine(menuItem.Value); }
             }
+            Console.WriteLine();
         }
 
 
 
-
-
-
+        #region MENU NAVIGATION
 
         /// <summary>
         /// Select preview menu item
         /// </summary>
-        private int SelectNextMenuItem(int index)
-        {
-            return (index + 1 >= _menuItems.Count) ? 0 : ++index;
-        }
+        private int SelectNextMenuItem(int index) => (index + 1 >= _menuItems.Count) ? 0 : ++index;
+
 
         /// <summary>
         ///  Select next menu item
         /// </summary>
-        private int SelectPrevMenuItem(int index)
-        {
-            return (index - 1 < 0) ? _menuItems.Count - 1 : --index;
-        }
+        private int SelectPrevMenuItem(int index) => (index - 1 < 0) ? _menuItems.Count - 1 : --index;
 
         /// <summary>
         /// return last menu item 
         /// </summary>
-        private int ReturnFromMenu(int index)
-        {
-            return _menuItems.Count - 1;
-        }
+        private int ReturnFromMenu(int index) => _menuItems.Count - 1;
 
 
         /// <summary>
@@ -118,63 +106,8 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        private int SelectMenuItem(int index)
-        {
-            return index;
-        }
+        private int SelectMenuItem(int index) => index; 
 
-
-
-
-
-
-
-        ///// <summary>
-        ///// Display Menu
-        ///// </summary>
-        ///// <returns>selected Menu item</returns>
-        //public int PrintMenu(string op)
-        //{
-        //    ConsoleKeyInfo key;
-        //    do
-        //    {
-        //        Console.Clear();
-
-        //        Console.WriteLine(op);
-        //        Console.WriteLine();
-
-        //        // MENU
-        //        if (counter >= menuItems.Length) { counter = menuItems.Length - 1; }
-
-        //        for (int i = 0; i < menuItems.Length; i++)
-        //        {
-        //            if (counter == i)
-        //            {
-        //                Console.BackgroundColor = ConsoleColor.Cyan;
-        //                Console.ForegroundColor = ConsoleColor.Black;
-        //                Console.WriteLine(menuItems[i]);
-        //                Console.BackgroundColor = ConsoleColor.Black;
-        //                Console.ForegroundColor = ConsoleColor.White;
-        //            }
-        //            else
-        //                Console.WriteLine(menuItems[i]);
-        //        }
-        //        key = Console.ReadKey();
-        //        if (key.Key == ConsoleKey.UpArrow)
-        //        {
-        //            if (--counter == -1) counter = menuItems.Length - 1;
-        //        }
-        //        if (key.Key == ConsoleKey.DownArrow)
-        //        {
-        //            if (++counter == menuItems.Length) counter = 0;
-        //        }
-        //        if (key.Key == ConsoleKey.Escape)
-        //        {
-        //            return menuItems.Length - 1;                // last menu must be Exit
-        //        }
-        //    }
-        //    while (key.Key != ConsoleKey.Enter);
-        //    return counter;
-        //}
+        #endregion
     }
 }
