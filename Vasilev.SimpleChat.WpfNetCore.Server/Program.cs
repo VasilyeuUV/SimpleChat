@@ -1,4 +1,5 @@
 ﻿using System;
+using Vasilev.SimpleChat.ConsNetCore.Server.Logic;
 using Vasilev.SimpleChat.ConsNetCore.Server.Models;
 
 namespace ChatServer
@@ -7,12 +8,14 @@ namespace ChatServer
     {
         static void Main(string[] args)
         {
-            var server = ServerModel.CreateServer();
+            var serverControl = new ServerControl();
+            serverControl.StartServer();
 
-            Console.WriteLine($"Ip: {server.Ip}");
-            Console.WriteLine($"Port: {server.Port}");
+            //Console.WriteLine($"Ip: {serverControl.Ip}");
+            //Console.WriteLine($"Port: {serverControl.Port}");
 
-            //server.Listener.Start();
+
+            serverControl.StopServer();
             Console.ReadKey();
         }
     }

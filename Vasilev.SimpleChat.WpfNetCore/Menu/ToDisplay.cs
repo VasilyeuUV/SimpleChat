@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Vasilev.SimpleChat.ConsNetCore.Menu
@@ -44,7 +45,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
 
 
         /// <summary>
-        /// Wait push key 
+        /// Display green text
         /// </summary>
         /// <param name="str"></param>
         internal static void Write(string str = "")
@@ -54,6 +55,16 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine(str);
                 Console.ForegroundColor = ConsoleColor.White;
+            }
+        }
+
+        internal static void ViewList(ICollection<string> collections)
+        {
+            int i = 0;
+            var textInfo = new CultureInfo("ru-RU").TextInfo;
+            foreach (var item in collections)
+            {
+                Write($"{++i}. {textInfo.ToTitleCase(textInfo.ToLower(item))};");
             }
         }
 

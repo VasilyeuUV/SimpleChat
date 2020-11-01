@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml.Schema;
 using Vasilev.SimpleChat.ConsNetCore.Menu.Base;
-using Vasilev.SimpleChat.ConsNetCore.Server.Models;
+using Vasilev.SimpleChat.ConsNetCore.Server.Logic;
 
 namespace Vasilev.SimpleChat.ConsNetCore.Menu
 {
@@ -10,7 +9,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
 
     internal class ServerManager : MenuBase, IDisposable
     {     
-        private static ServerModel server = null;
+        private ServerControl _serverControl = null;
 
         /// <summary>
         /// CTOR
@@ -35,13 +34,13 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
         {
             ToDisplay.ViewTitle(_selectedMethod.Value.ToUpper(), true);
 
-            if (server == null)
+            if (_serverControl == null)
             {
-                ToDisplay.WaitForContinue("Сервер не запущен.");
+                ToDisplay.WaitForContinue("Сервер не запущен. Поддерживаемые вопросы получить невозможно.");
                 return;
             }
 
-            ToDisplay.ViewBody("Здесь отобразится список вопросов");
+            ToDisplay.ViewList(_serverControl.GetQuestions());
             ToDisplay.WaitForContinue();
         }
 
@@ -52,7 +51,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
         {
             ToDisplay.ViewTitle(_selectedMethod.Value.ToUpper(), true); 
 
-            if (server == null)
+            if (_serverControl == null)
             {
                 ToDisplay.WaitForContinue("Сервер не запущен. Список пуст.");
                 return;
@@ -75,14 +74,14 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
         /// </summary>
         private void StartServer()
         {
-            if (server != null)
+            if (_serverControl != null)
             {
                 ToDisplay.WaitForContinue("Сервер уже работает");
                 return;
             }
 
-            server = ServerModel.CreateServer();
-            server.Listener.Start();
+            _serverControl = new ServerControl();
+            _serverControl.StartServer();
             ToDisplay.WaitForContinue("Сервер запущен");
         }
 
@@ -92,14 +91,14 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
         /// </summary>
         private void StopServer()
         {
-            if (server == null)
+            if (_serverControl == null)
             {
                 ToDisplay.WaitForContinue("Сервер еще не запущен");
                 return;
             }
 
-            server?.Listener?.Stop();
-            server = null;
+            _serverControl?.StopServer();
+            _serverControl = null;
             ToDisplay.WaitForContinue("Сервер остановлен");
         }
 
@@ -124,7 +123,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
             _disposed = true;
 
             // Освобождение управляемых ресурсов
-            if (server != null) { StopServer(); }
+            if (_serverControl != null) { StopServer(); }
             _methods.Clear();
         }
 
