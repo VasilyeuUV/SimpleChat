@@ -1,9 +1,4 @@
-﻿using ChatServer.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Vasilev.SimpleChat.ConsNetCore.Server.DataLayer;
+﻿using System.Collections.Generic;
 using Vasilev.SimpleChat.ConsNetCore.Server.Models;
 
 namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
@@ -11,13 +6,19 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
     public class ServerControl
     {
         private ServerModel _serverModel = null;
-        private ConnectionData _connectionData = null;
-        private QuestionAnswerData _qaData = null;
 
 
+        #region QADATA
+
+        /// <summary>
+        /// Get List of possible questions
+        /// </summary>
+        /// <returns></returns>
+        public ICollection<string> GetQuestions() => _serverModel.GetQuestions();
+
+        #endregion
 
 
-        public ICollection<string> GetQuestions() => _qaData.QADictionary.SelectMany(x => x.Key).ToList();
 
 
         #region CLIENTS
@@ -26,7 +27,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
         /// Returns the names of the connected clients
         /// </summary>
         /// <returns></returns>
-        public ICollection<string> GetClients() => _connectionData.ConnectedClients.Select(x => x.NickName).ToList();
+        public ICollection<string> GetClients() => _serverModel.GetClient();   
 
 
         #endregion
@@ -40,11 +41,8 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
         /// <returns></returns>
         public void StartServer()
         {
-            _connectionData = new ConnectionData();
-            _qaData = new QuestionAnswerData();
-
             _serverModel = new ServerModel();
-            _serverModel?.Listener?.Start();
+            _serverModel?.ServerStart();
         }
 
         /// <summary>
@@ -52,14 +50,8 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
         /// </summary>
         public void StopServer()
         {
-            _serverModel?.Listener?.Stop();
+            _serverModel?.ServerStop();
             _serverModel = null;
-
-            _connectionData.Clear();
-            _connectionData = null;
-
-            _qaData.QADictionary.Clear();
-            _qaData = null;
         } 
         #endregion
     }
