@@ -3,19 +3,19 @@ using System.Collections.Generic;
 
 namespace ChatServer.Models
 {
-    public class UserModel
+    internal class UserModel
     {
-        public Guid Id { get; private set; }
+        internal Guid Id { get; private set; }
 
-        public string NickName { get; private set; }
+        internal string NickName { get; private set; }
 
-        public ICollection<string> ChatHistory { get; }
+        internal ICollection<string> ChatHistory { get; }
 
 
         /// <summary>
         /// CTOR
         /// </summary>
-        public UserModel(string nickName = "NoName")
+        internal UserModel(string nickName = "NoName")
         {
             this.Id = new Guid();
             this.NickName = nickName;

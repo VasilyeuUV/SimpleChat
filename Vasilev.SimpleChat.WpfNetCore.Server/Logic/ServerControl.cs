@@ -10,12 +10,8 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
 {
     public class ServerControl
     {
-
         private ServerModel _serverModel = null;
-        private ICollection<UserModel> _users = null;
-
         private ConnectionData _connectionData = null;
-
         private QuestionAnswerData _qaData = null;
 
 
@@ -61,6 +57,9 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
 
             _connectionData.Clear();
             _connectionData = null;
+
+            _qaData.QADictionary.Clear();
+            _qaData = null;
         } 
         #endregion
     }

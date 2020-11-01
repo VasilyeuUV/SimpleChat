@@ -57,7 +57,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
                 return;
             }
 
-            ToDisplay.ViewBody("Здесь отобразится список присоединенных клиентов");
+            ToDisplay.ViewList(_serverControl.GetClients(), false);
             ToDisplay.WaitForContinue();
         }
 

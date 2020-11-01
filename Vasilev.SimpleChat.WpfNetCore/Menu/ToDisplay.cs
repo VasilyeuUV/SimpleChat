@@ -58,13 +58,14 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
             }
         }
 
-        internal static void ViewList(ICollection<string> collections)
+        internal static void ViewList(ICollection<string> collections, bool capitalizedFirstLetter = true)
         {
             int i = 0;
             var textInfo = new CultureInfo("ru-RU").TextInfo;
             foreach (var item in collections)
             {
-                Write($"{++i}. {textInfo.ToTitleCase(textInfo.ToLower(item))};");
+                string s = capitalizedFirstLetter ? textInfo.ToTitleCase(textInfo.ToLower(item)) : item;
+                Write($"{++i}. {s};");
             }
         }
 
