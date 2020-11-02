@@ -1,5 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Windows;
 using System.Windows.Input;
 using Vasilev.SimpleChat.WpfNetCore.Client.Infrastructure.Commands;
 using Vasilev.SimpleChat.WpfNetCore.Client.Models;
@@ -11,7 +15,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
     {
         #region UserName
 
-        private string _userName = "Anton";
+        private string _userName = null;
 
         /// <summary>
         /// User NickName
@@ -24,7 +28,9 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                 Set(ref _userName, value);
 
                 int maxLength = 50;
-                _userName = _userName.Length > maxLength ? _userName.Substring(0, maxLength) : _userName;
+                _userName = _userName.Length > maxLength 
+                    ? _userName.Substring(0, maxLength) 
+                    : _userName;
             }
         }
 
@@ -48,45 +54,34 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
         #endregion
 
-        #region CONNECTION
 
 
-        private bool _connected = false;
+        #region CLIENT
 
-        /// <summary>
-        /// Connection status
-        /// </summary>
-        public bool Connected
-        {
-            get => _connected;
-            set => Set(ref _connected, value);
-        }
-
-
-        private string _ip = string.Empty;
+        private ConnectionModel _connection = null;
 
         /// <summary>
-        /// Client IP
+        /// Client connection parameters and connected status
         /// </summary>
-        public string Ip
+        public ConnectionModel Connection
         {
-            get => _ip;
-            set => Set(ref _ip, value);
+            get
+            {
+                if (_connection == null)
+                {
+                    _connection = new ConnectionModel()
+                    {
+                        IsConnected = false,
+                        Port = 8888
+                    };
+                    string host = Dns.GetHostName();
+                    _connection.Ip = Dns.GetHostEntry(host).AddressList[0];
+                    DoWorkAsync();
+
+                }
+                return _connection;
+            }
         }
-
-
-
-        private string _port = string.Empty;
-
-        /// <summary>
-        /// Connection Port
-        /// </summary>
-        public string Port
-        {
-            get => _port;
-            set => Set(ref _port, value);
-        }
-
 
         #endregion
 
@@ -102,10 +97,6 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
             get => _selectedMessage;
             set => Set(ref _selectedMessage, value);
         }
-
-        
-
-
 
 
         private ObservableCollection<MessageModel> _chat = null;
@@ -149,12 +140,50 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                 },
                 obj =>
                 {
-                    return (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(UserMessage)) ? false : true;
+                    return (string.IsNullOrWhiteSpace(UserMessage)) ? false : true;
                 }
                 );
 
 
         #endregion
+
+
+
+        #region METHODS
+
+        /// <summary>
+        /// Job
+        /// </summary>
+        private void DoWorkAsync()
+        {
+            TcpClient client = new TcpClient();
+            Connection.IsConnected = ConnectToServer(ref client);
+            
+        }
+
+        /// <summary>
+        /// Connection to Server
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="port"></param>
+        /// <returns></returns>
+        private bool ConnectToServer(ref TcpClient client)
+        {
+            try
+            {
+                client.Connect(Connection.Ip, Connection.Port);
+                MessageBox.Show("Подключен к серверу");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return false;
+            }
+        }
+
+        #endregion
+
 
     }
 }

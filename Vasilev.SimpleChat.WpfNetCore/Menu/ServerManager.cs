@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Vasilev.SimpleChat.ConsNetCore.Menu.Base;
 using Vasilev.SimpleChat.ConsNetCore.Server.Logic;
 
@@ -81,7 +82,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
             }
 
             _serverControl = new ServerControl();
-            _serverControl.StartServer();
+            Task.Factory.StartNew(() => _serverControl.StartServerAsync());            
             ToDisplay.WaitForContinue("Сервер запущен");
         }
 

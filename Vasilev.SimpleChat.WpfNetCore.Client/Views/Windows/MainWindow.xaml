@@ -24,17 +24,17 @@
            
             <!--Connected-->
             <StatusBarItem>
-                <TextBlock Text="{Binding Client.Connected, StringFormat=Connected: {0}}"/>
+                <TextBlock Text="{Binding Client.Connection.IsConnected, StringFormat=Connected: {0}}"/>
             </StatusBarItem>
 
             <!--IP Adress-->
             <StatusBarItem Margin="20,0,0,0">
-                <TextBlock Text="{Binding Client.Ip, StringFormat=IP: {0}}"/>
+                <TextBlock Text="{Binding Client.Connection.Ip, StringFormat=IP: {0}}"/>
             </StatusBarItem>
 
             <!--Port-->
             <StatusBarItem Margin="20,0,0,0">
-                <TextBlock Text="{Binding Client.Port, StringFormat=Port: {0}}"/>
+                <TextBlock Text="{Binding Client.Connection.Port, StringFormat=Port: {0}}"/>
             </StatusBarItem>
             
         </StatusBar>

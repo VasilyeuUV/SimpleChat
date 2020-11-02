@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -9,7 +10,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
 {
     internal class ServerModel : IDisposable
     {
-        private readonly IPAddress _ip = IPAddress.Parse("127.0.0.1");
+        private readonly IPAddress _ip = null;
         private readonly int _port = 8888;
         private TcpListener _listener = null;
         private ServerDataModel _serverData = null;
@@ -22,16 +23,38 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
         /// <summary>
         /// Start Server
         /// </summary>
-        internal async Task ServerStart()
+        internal async Task ServerStartAsync()
         {
             _serverData = new ServerDataModel();
-            _listener ??= new TcpListener(_ip, _port);
+            _listener ??= new TcpListener(IPAddress.Any, _port);
+            await DoWorkAsync();
+        }
+
+        private async Task DoWorkAsync()
+        {
             _listener?.Start();
+            while (_listener != null)
+            {
+                TcpClient tcpClient = _listener.AcceptTcpClient();
 
-            //while (_listener != null)
-            //{
+                using (StreamReader sr = new StreamReader(tcpClient.GetStream()) )
+                {
+                    while (tcpClient.Connected)
+                    {
+                        try
+                        {
+                            var line = sr.ReadLine();
+                            Console.WriteLine(line);
+                        }
+                        catch (Exception)
+                        {
+                        }
 
-            //}            
+                    }
+                }
+
+            }
+
         }
 
 
@@ -42,6 +65,13 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
         {
             _listener?.Stop();
             _listener = null;
+
+            foreach (var client in _serverData.ConnectedClients)
+            {
+                //client.Close();
+            }
+
+
 
             _serverData.ConnectedClients.Clear();
             _serverData.QaDictionary.Clear();

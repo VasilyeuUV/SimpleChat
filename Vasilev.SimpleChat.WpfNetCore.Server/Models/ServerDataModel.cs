@@ -1,7 +1,5 @@
 ﻿using ChatServer.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
 {

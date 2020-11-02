@@ -1,15 +1,13 @@
-﻿using System.IO;
-using System.Net.Sockets;
+﻿using System.Net;
 
 namespace Vasilev.SimpleChat.WpfNetCore.Client.Models
 {
     internal class ConnectionModel
     {
-        public TcpClient Tcp { get; internal set; }
+        public IPAddress Ip { get; internal set; }
 
-        public StreamReader Reader { get; internal set; }
+        public int Port { get; internal set; }
 
-        public StreamWriter Writer { get; internal set; }
-
+        public bool IsConnected { get; internal set; }
     }
 }
