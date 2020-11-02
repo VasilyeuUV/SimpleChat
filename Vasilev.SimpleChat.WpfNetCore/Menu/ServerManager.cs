@@ -82,7 +82,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
             }
 
             _serverControl = new ServerControl();
-            Task.Factory.StartNew(() => _serverControl.StartServerAsync());            
+            Task.Factory.StartNew(() => _serverControl.StartServer());            
             ToDisplay.WaitForContinue("Сервер запущен");
         }
 

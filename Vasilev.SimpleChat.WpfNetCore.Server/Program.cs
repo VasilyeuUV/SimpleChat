@@ -9,7 +9,7 @@ namespace ChatServer
         static void Main(string[] args)
         {
             var serverControl = new ServerControl();
-            serverControl.StartServerAsync();
+            serverControl.StartServer();
 
             //Console.WriteLine($"Ip: {serverControl.Ip}");
             //Console.WriteLine($"Port: {serverControl.Port}");

@@ -4,58 +4,118 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
 {
     internal class ServerModel : IDisposable
     {
-        private readonly IPAddress _ip = null;
+        //private readonly IPAddress _ip = null;
         private readonly int _port = 8888;
         private TcpListener _listener = null;
         private ServerDataModel _serverData = null;
 
 
-        internal IPAddress Ip => _ip;
+        //internal IPAddress Ip => _ip;
         internal int Port => _port;
 
 
         /// <summary>
         /// Start Server
         /// </summary>
-        internal async Task ServerStartAsync()
+        internal void ServerStart()
         {
             _serverData = new ServerDataModel();
+
             _listener ??= new TcpListener(IPAddress.Any, _port);
-            await DoWorkAsync();
+            _listener?.Start();
+            DoWork();
         }
 
-        private async Task DoWorkAsync()
+
+        private void DoWork()
         {
-            _listener?.Start();
-            while (_listener != null)
+            try
             {
-                TcpClient tcpClient = _listener.AcceptTcpClient();
-
-                using (StreamReader sr = new StreamReader(tcpClient.GetStream()) )
+                while (_listener != null)
                 {
-                    while (tcpClient.Connected)
+                    using (var client = _listener.AcceptTcpClient())
                     {
-                        try
-                        {
-                            var line = sr.ReadLine();
-                            Console.WriteLine(line);
-                        }
-                        catch (Exception)
-                        {
-                        }
+                        // получаем сетевой поток для чтения и записи
+                        NetworkStream stream = client.GetStream();
 
+                        // сообщение для отправки клиенту
+                        string response = "Привет мир";
+                        // преобразуем сообщение в массив байтов
+                        byte[] data = Encoding.UTF8.GetBytes(response);
+
+                        // отправка сообщения
+                        stream.Write(data, 0, data.Length);
+
+                        // закрываем поток
+                        stream.Close();
                     }
                 }
-
+            }
+            catch (Exception)
+            {
+                throw new Exception();
             }
 
+
+
+
+
+                
+
+                //_serverData.ConnectedClients.Add(new ChatServer.Models.UserModel());
         }
+
+
+
+
+
+        //private async System.Threading.Tasks.Task DoWorkAsync()
+        //{
+        //    _listener?.Start();
+
+
+
+
+
+        //    if (async)
+        //    {
+
+        //    }
+        //    else
+        //        HandleConnections(listener);
+
+
+        //    while (_listener != null)
+        //    {
+        //        //TcpClient tcpClient = _listener.AcceptTcpClient();
+        //        TcpClient tcpClient = await _listener.AcceptTcpClientAsync();
+
+        //        using (StreamReader sr = new StreamReader(tcpClient.GetStream()) )
+        //        {
+        //            while (tcpClient.Connected)
+        //            {
+        //                try
+        //                {
+        //                    var line = sr.ReadLine();
+        //                    Console.WriteLine(line);
+        //                }
+        //                catch (Exception)
+        //                {
+        //                }
+
+        //            }
+        //        }
+
+        //    }
+
+        //}
 
 
         /// <summary>

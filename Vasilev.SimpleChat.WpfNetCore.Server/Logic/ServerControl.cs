@@ -39,10 +39,10 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
         /// Start Server
         /// </summary>
         /// <returns></returns>
-        public async System.Threading.Tasks.Task StartServerAsync()
+        public void StartServer()
         {
             _serverModel = new ServerModel();
-            await _serverModel.ServerStartAsync();
+            _serverModel.ServerStart();
         }
 
         /// <summary>

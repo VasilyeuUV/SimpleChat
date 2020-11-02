@@ -1,11 +1,48 @@
 {
   "version": 3,
   "targets": {
-    ".NETCoreApp,Version=v3.1": {}
+    ".NETCoreApp,Version=v3.1": {
+      "Vasilev.SimpleChat.ConsNetCore/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "dependencies": {
+          "Vasilev.SimpleChat.ConsNetCore.Server": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Vasilev.SimpleChat.ConsNetCore.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Vasilev.SimpleChat.ConsNetCore.dll": {}
+        }
+      },
+      "Vasilev.SimpleChat.ConsNetCore.Server/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "compile": {
+          "bin/placeholder/Vasilev.SimpleChat.ConsNetCore.Server.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Vasilev.SimpleChat.ConsNetCore.Server.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Vasilev.SimpleChat.ConsNetCore/1.0.0": {
+      "type": "project",
+      "path": "../Vasilev.SimpleChat.WpfNetCore/Vasilev.SimpleChat.ConsNetCore.csproj",
+      "msbuildProject": "../Vasilev.SimpleChat.WpfNetCore/Vasilev.SimpleChat.ConsNetCore.csproj"
+    },
+    "Vasilev.SimpleChat.ConsNetCore.Server/1.0.0": {
+      "type": "project",
+      "path": "../Vasilev.SimpleChat.WpfNetCore.Server/Vasilev.SimpleChat.ConsNetCore.Server.csproj",
+      "msbuildProject": "../Vasilev.SimpleChat.WpfNetCore.Server/Vasilev.SimpleChat.ConsNetCore.Server.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    ".NETCoreApp,Version=v3.1": []
+    ".NETCoreApp,Version=v3.1": [
+      "Vasilev.SimpleChat.ConsNetCore >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\I3JIAD\\.nuget\\packages\\": {},
@@ -36,7 +73,11 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
-          "projectReferences": {}
+          "projectReferences": {
+            "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore\\Vasilev.SimpleChat.ConsNetCore.csproj": {
+              "projectPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore\\Vasilev.SimpleChat.ConsNetCore.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

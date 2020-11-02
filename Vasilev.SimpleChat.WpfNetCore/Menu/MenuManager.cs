@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Vasilev.SimpleChat.ConsNetCore.Menu.Base;
 
@@ -33,6 +34,9 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
             }
         }
 
+        /// <summary>
+        /// Exit from Server Manager
+        /// </summary>
         private void Exit()
         {
             ToDisplay.WaitForContinue("Работа завершена.");

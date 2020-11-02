@@ -7,14 +7,40 @@
   "targets": {
     ".NETCoreApp,Version=v3.1": {
       "Vasilev.SimpleChat.WpfNetCore.Client/1.0.0": {
+        "dependencies": {
+          "Vasilev.SimpleChat.ConsNetCore": "1.0.0"
+        },
         "runtime": {
           "Vasilev.SimpleChat.WpfNetCore.Client.dll": {}
+        }
+      },
+      "Vasilev.SimpleChat.ConsNetCore/1.0.0": {
+        "dependencies": {
+          "Vasilev.SimpleChat.ConsNetCore.Server": "1.0.0"
+        },
+        "runtime": {
+          "Vasilev.SimpleChat.ConsNetCore.dll": {}
+        }
+      },
+      "Vasilev.SimpleChat.ConsNetCore.Server/1.0.0": {
+        "runtime": {
+          "Vasilev.SimpleChat.ConsNetCore.Server.dll": {}
         }
       }
     }
   },
   "libraries": {
     "Vasilev.SimpleChat.WpfNetCore.Client/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Vasilev.SimpleChat.ConsNetCore/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Vasilev.SimpleChat.ConsNetCore.Server/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
