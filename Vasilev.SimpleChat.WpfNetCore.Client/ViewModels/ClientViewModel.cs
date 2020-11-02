@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using Vasilev.SimpleChat.WpfNetCore.Client.Infrastructure.Commands;
@@ -56,7 +57,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
 
 
-        #region CLIENT
+        #region CONNECTION
 
         private ConnectionModel _connection = null;
 
@@ -76,7 +77,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                     };
                     string host = Dns.GetHostName();
                     _connection.Ip = Dns.GetHostEntry(host).AddressList[0];
-                    DoWorkAsync();
+                    DoWork();
 
                 }
                 return _connection;
@@ -84,6 +85,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
         }
 
         #endregion
+
 
         #region CHAT
 
@@ -154,10 +156,42 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
         /// <summary>
         /// Job
         /// </summary>
-        private void DoWorkAsync()
+        private void DoWork()
         {
             TcpClient client = new TcpClient();
             Connection.IsConnected = ConnectToServer(ref client);
+
+            while (Connection.IsConnected)
+            {
+                try
+                {
+                    byte[] data = new byte[256];
+                    StringBuilder response = new StringBuilder();
+                    NetworkStream stream = client.GetStream();
+
+                    do
+                    {
+                        int bytes = stream.Read(data, 0, data.Length);
+                        response.Append(Encoding.UTF8.GetString(data, 0, bytes));
+                    }
+                    while (stream.DataAvailable); // пока данные есть в потоке
+
+                    Chat.Add(new MessageModel() { Author = "Server", Message = response.ToString() });
+
+                }
+                catch (SocketException ex)
+                {
+                    MessageBox.Show("SocketException: {0}", ex.Message);
+                    throw new SocketException();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Exception: {0}", ex.Message);
+                    throw new Exception();
+                }
+
+                Connection.IsConnected = false;
+            }
             
         }
 
