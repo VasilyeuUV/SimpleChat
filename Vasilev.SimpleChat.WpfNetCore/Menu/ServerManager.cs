@@ -82,7 +82,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
             }
 
             _serverControl = new ServerControl();
-            Task.Factory.StartNew(() => _serverControl.StartServer());            
+            Task.Factory.StartNew(() => _serverControl.ServerStart());            
             ToDisplay.WaitForContinue("Сервер запущен");
         }
 
@@ -98,7 +98,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
                 return;
             }
 
-            _serverControl?.StopServer();
+            _serverControl?.ServerStop();
             _serverControl = null;
             ToDisplay.WaitForContinue("Сервер остановлен");
         }

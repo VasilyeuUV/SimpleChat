@@ -1,5 +1,4 @@
-﻿using ChatServer.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
 {
@@ -8,33 +7,21 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
 
         #region ConnectedClients
 
-        private ICollection<UserModel> _connectedClients = null;
+        private ICollection<ClientModel> _connectedClients = null;
 
         /// <summary>
         /// Connected Clients
         /// </summary>
-        internal ICollection<UserModel> ConnectedClients => _connectedClients ??= new List<UserModel>();
-
-       
-
-
-        /// <summary>
-        /// Clear all data
-        /// </summary>
-        internal void Clear()
-        {
-            ConnectedClients.Clear();
-            _connectedClients = null;
-        }
+        internal ICollection<ClientModel> ConnectedClients => _connectedClients ??= new List<ClientModel>();
 
         #endregion
 
 
         #region QuestionAnswerData
 
-        private IDictionary<string[], string[]> qaDictionary = default;
+        private IDictionary<string[], string[]> _qaDictionary = default;
 
-        internal IDictionary<string[], string[]> QaDictionary => qaDictionary ??= new Dictionary<string[], string[]>()
+        internal IDictionary<string[], string[]> QaDictionary => _qaDictionary ??= new Dictionary<string[], string[]>()
         {
             [new[] { "привет", "здоров", "здравствуй", "доброго" }] = new[] { "Привет", "Здоров", "Здравствуй", "Доброго" },
             [new[] { "как дела", }] = new[] { "Нормально", "Отлично", "Сносно", "Не очень" },
@@ -45,6 +32,18 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
 
         #endregion
 
+
+        /// <summary>
+        /// Clear all data
+        /// </summary>
+        internal void Clear()
+        {
+            ConnectedClients.Clear();
+            _connectedClients = null;
+
+            QaDictionary.Clear();
+            _qaDictionary = null;
+        }
 
     }
 }

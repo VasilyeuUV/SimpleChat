@@ -8,14 +8,14 @@ namespace ChatServer
     {
         static void Main(string[] args)
         {
-            var serverControl = new ServerControl();
-            serverControl.StartServer();
+            //var serverControl = new ServerControl();
+            //serverControl.ServerStart();
 
-            //Console.WriteLine($"Ip: {serverControl.Ip}");
-            //Console.WriteLine($"Port: {serverControl.Port}");
+            ////Console.WriteLine($"Ip: {serverControl.Ip}");
+            ////Console.WriteLine($"Port: {serverControl.Port}");
 
 
-            serverControl.StopServer();
+            //serverControl.StopServer();
             Console.ReadKey();
         }
     }
