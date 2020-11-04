@@ -93,6 +93,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
         {
             TcpClient client = new TcpClient();
 
+            ///try to connect to server
             while (!Connection.IsConnected)
             {
                 Connection.IsConnected = ConnectToServer(ref client);

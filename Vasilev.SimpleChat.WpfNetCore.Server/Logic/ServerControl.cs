@@ -57,15 +57,18 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             {
                 _server?.TcpListener.Start();
 
-                while (_server != null)
+                while (_server.TcpListener != null)
                 {
-                    TcpClient tcpClient = _server.TcpListener.AcceptTcpClient();
+                    TcpClient tcpClient = _server?.TcpListener?.AcceptTcpClient();
                     if (tcpClient != null)
                     {
                         AddNewClient(tcpClient);
                     }
-                    tcpClient = null;
                 }
+            }
+            catch (SocketException ex) when (ex.ErrorCode == 10004)
+            {
+                return;
             }
             catch (Exception ex)
             {
@@ -101,7 +104,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                         Message = response
                     };
 
-                    if (SendMessage(stream, message))
+                    if (SendMessage(client, message))
                     {
                         client.ChatHistory.Add(message);
                     }
@@ -123,16 +126,15 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             }
         }
 
-        private bool SendMessage(NetworkStream stream, MessageModel message)
+        private bool SendMessage(ClientModel client, MessageModel message)
         {
-
             try
             {
                 // преобразуем сообщение в массив байтов
                 byte[] data = Encoding.UTF8.GetBytes(message.ToString());
 
                 // отправка сообщения
-                stream.Write(data, 0, data.Length);
+                client.Stream.Write(data, 0, data.Length);
 
                 return true;
             }
