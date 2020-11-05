@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 using Vasilev.SimpleChat.ConsNetCore.Server.Models;
 
 namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
@@ -61,6 +62,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                 {
                     TcpClient tcpClient = _server?.TcpListener?.AcceptTcpClient();
                     AddNewClient(tcpClient);
+
                 }
             }
             catch (SocketException ex) when (ex.ErrorCode == 10004)
@@ -107,8 +109,8 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                     _server.ServerData.ConnectedClients.Add(client);
 
 
-                    //Task doWork = new Task(async () => await ChatDoWorkAsync(client));
-                    //doWork.Start();
+                    Task clientChatDoWork = new Task(async () => await ClientChatDoWorkAsync(client));
+                    clientChatDoWork.Start();
                 }
             }
             catch (Exception)
@@ -116,6 +118,40 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                 throw;
             }
         }
+
+        private Task ClientChatDoWorkAsync(ClientModel client)
+        {
+            while(true)
+            {
+                Task.Delay(10);
+                try
+                {
+                    byte[] bytes = new byte[256];
+                    StringBuilder response = new StringBuilder();
+
+                    int bytesLength = 0;
+                    while ((bytesLength = client.Stream.Read(bytes, 0, bytes.Length)) > 0)
+                    {
+                        response.Append(Encoding.UTF8.GetString(bytes, 0, bytesLength));
+                    }
+                    if (response.Length > 0)
+                    {
+                        string msg = response.ToString();
+                        client.ChatHistory.Add((new MessageModel()).ConvertToMessageModel(msg));
+                    }
+                }
+                catch (SocketException ex) when (ex.ErrorCode == 10004)
+                {
+                    throw new SocketException();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            }
+        }
+
+
 
         private bool SendMessage(ClientModel client, MessageModel message)
         {
