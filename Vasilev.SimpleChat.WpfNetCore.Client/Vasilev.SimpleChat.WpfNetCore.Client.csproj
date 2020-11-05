@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Vasilev.SimpleChat.WpfNetCore\Vasilev.SimpleChat.ConsNetCore.csproj" />
+    <ProjectReference Include="..\Vasilev.SimpleChat.ConsNetCore.Communication\Vasilev.SimpleChat.ConsNetCore.Communication.csproj" />
   </ItemGroup>
 
 </Project>

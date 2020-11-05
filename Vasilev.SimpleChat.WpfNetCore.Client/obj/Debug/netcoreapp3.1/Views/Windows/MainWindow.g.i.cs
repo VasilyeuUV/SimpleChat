@@ -63,8 +63,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Vasilev.SimpleChat.WpfNetCore.Client;V1.0.0.0;component/views/windows/mainwindow" +
-                    ".xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Vasilev.SimpleChat.WpfNetCore.Client;component/views/windows/mainwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\..\Views\Windows\MainWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

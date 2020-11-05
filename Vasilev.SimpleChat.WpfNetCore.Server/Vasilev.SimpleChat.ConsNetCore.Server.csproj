@@ -5,4 +5,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Vasilev.SimpleChat.ConsNetCore.Communication\Vasilev.SimpleChat.ConsNetCore.Communication.csproj" />
+  </ItemGroup>
+
 </Project>

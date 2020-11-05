@@ -4,76 +4,14 @@
     "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Client\\Vasilev.SimpleChat.WpfNetCore.Client.csproj": {}
   },
   "projects": {
-    "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Client\\Vasilev.SimpleChat.WpfNetCore.Client.csproj": {
+    "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.ConsNetCore.Communication\\Vasilev.SimpleChat.ConsNetCore.Communication.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Client\\Vasilev.SimpleChat.WpfNetCore.Client.csproj",
-        "projectName": "Vasilev.SimpleChat.WpfNetCore.Client",
-        "projectPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Client\\Vasilev.SimpleChat.WpfNetCore.Client.csproj",
+        "projectUniqueName": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.ConsNetCore.Communication\\Vasilev.SimpleChat.ConsNetCore.Communication.csproj",
+        "projectName": "Vasilev.SimpleChat.ConsNetCore.Communication",
+        "projectPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.ConsNetCore.Communication\\Vasilev.SimpleChat.ConsNetCore.Communication.csproj",
         "packagesPath": "C:\\Users\\I3JIAD\\.nuget\\packages\\",
-        "outputPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Client\\obj\\",
-        "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
-        "configFilePaths": [
-          "C:\\Users\\I3JIAD\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-        ],
-        "originalTargetFrameworks": [
-          "netcoreapp3.1"
-        ],
-        "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "netcoreapp3.1": {
-            "projectReferences": {
-              "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore\\Vasilev.SimpleChat.ConsNetCore.csproj": {
-                "projectPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore\\Vasilev.SimpleChat.ConsNetCore.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        }
-      },
-      "frameworks": {
-        "netcoreapp3.1": {
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            },
-            "Microsoft.WindowsDesktop.App.WPF": {
-              "privateAssets": "none"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Server\\Vasilev.SimpleChat.ConsNetCore.Server.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Server\\Vasilev.SimpleChat.ConsNetCore.Server.csproj",
-        "projectName": "Vasilev.SimpleChat.ConsNetCore.Server",
-        "projectPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Server\\Vasilev.SimpleChat.ConsNetCore.Server.csproj",
-        "packagesPath": "C:\\Users\\I3JIAD\\.nuget\\packages\\",
-        "outputPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Server\\obj\\",
+        "outputPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.ConsNetCore.Communication\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -121,14 +59,14 @@
         }
       }
     },
-    "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore\\Vasilev.SimpleChat.ConsNetCore.csproj": {
+    "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Client\\Vasilev.SimpleChat.WpfNetCore.Client.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore\\Vasilev.SimpleChat.ConsNetCore.csproj",
-        "projectName": "Vasilev.SimpleChat.ConsNetCore",
-        "projectPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore\\Vasilev.SimpleChat.ConsNetCore.csproj",
+        "projectUniqueName": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Client\\Vasilev.SimpleChat.WpfNetCore.Client.csproj",
+        "projectName": "Vasilev.SimpleChat.WpfNetCore.Client",
+        "projectPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Client\\Vasilev.SimpleChat.WpfNetCore.Client.csproj",
         "packagesPath": "C:\\Users\\I3JIAD\\.nuget\\packages\\",
-        "outputPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore\\obj\\",
+        "outputPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Client\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -147,8 +85,8 @@
         "frameworks": {
           "netcoreapp3.1": {
             "projectReferences": {
-              "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Server\\Vasilev.SimpleChat.ConsNetCore.Server.csproj": {
-                "projectPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.WpfNetCore.Server\\Vasilev.SimpleChat.ConsNetCore.Server.csproj"
+              "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.ConsNetCore.Communication\\Vasilev.SimpleChat.ConsNetCore.Communication.csproj": {
+                "projectPath": "E:\\_projects\\tests\\SimpleChat\\Vasilev.SimpleChat.ConsNetCore.Communication\\Vasilev.SimpleChat.ConsNetCore.Communication.csproj"
               }
             }
           }
@@ -174,6 +112,9 @@
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
+            },
+            "Microsoft.WindowsDesktop.App.WPF": {
+              "privateAssets": "none"
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"

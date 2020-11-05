@@ -19,6 +19,9 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
 
         #region QuestionAnswerData
 
+        internal string ServerFirstPhrase { get; } = "Приветствую Вас.\nНазовите Ваше имя.";
+
+
         private IDictionary<string[], string[]> _qaDictionary = default;
 
         internal IDictionary<string[], string[]> QaDictionary => _qaDictionary ??= new Dictionary<string[], string[]>()

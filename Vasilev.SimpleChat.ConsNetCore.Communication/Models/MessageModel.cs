@@ -18,10 +18,15 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
         {
         }
 
+        /// <summary>
+        /// Create MessageModel
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static MessageModel CreateModel(string message)
         {
             if (string.IsNullOrWhiteSpace(message)) { return null; }
-            
+
             string[] msg = message.Split("\n");
             if (msg.Length >= 3)
             {
@@ -41,6 +46,22 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
             return null;
         }
 
+        /// <summary>
+        /// Create MessageModel
+        /// </summary>
+        /// <param name="dtg"></param>
+        /// <param name="serverName"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static MessageModel CreateModel(DateTime dtg, string serverName, string message)
+        {
+            MessageModel messageModel = new MessageModel();
+            messageModel.Dtg = dtg;
+            messageModel.Author = serverName;
+            messageModel.Message = message.Trim();
+            return messageModel;
+        }
+
 
         /// <summary>
         /// Convert MessageModel to string
@@ -50,5 +71,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
         {
             return string.Format($"{Dtg.ToString("G", DateTimeFormatInfo.InvariantInfo)}\n{Author}\n{Message}");
         }
+
+
     }
 }

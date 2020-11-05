@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Vasilev.SimpleChat.ConsNetCore.Communication.Models;
 using Vasilev.SimpleChat.WpfNetCore.Client.Infrastructure.Commands;
 using Vasilev.SimpleChat.WpfNetCore.Client.Models;
 using Vasilev.SimpleChat.WpfNetCore.Client.ViewModels.Base;
@@ -197,7 +198,8 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                 }
                 if (response.Length > 0)
                 {
-                    this._dispatcher.Invoke(new Action(() => Chat.Add(new MessageModel(response.ToString()))));
+                    MessageModel msg = MessageModel.CreateModel(response.ToString());
+                    if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }                    
                 }               
             }
             catch (SocketException ex)

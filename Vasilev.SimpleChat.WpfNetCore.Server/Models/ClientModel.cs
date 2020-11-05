@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using Vasilev.SimpleChat.ConsNetCore.Communication.Models;
 
 namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
 {
@@ -20,12 +21,11 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
         /// <summary>
         /// CTOR
         /// </summary>
-        internal ClientModel(/*NetworkStream stream,*/ string nickName = "NoName")
+        internal ClientModel(string nickName = "NoName")
         {
             this.Id = new Guid();
             this.NickName = nickName;
             this.ChatHistory = new List<MessageModel>();
-            //this.Stream = stream;
         }
 
 

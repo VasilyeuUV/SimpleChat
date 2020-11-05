@@ -6,3 +6,7 @@ E:\_projects\tests\SimpleChat\Vasilev.SimpleChat.WpfNetCore.Server\obj\Debug\net
 E:\_projects\tests\SimpleChat\Vasilev.SimpleChat.WpfNetCore.Server\obj\Debug\netcoreapp3.1\Vasilev.SimpleChat.ConsNetCore.Server.csproj.CoreCompileInputs.cache
 E:\_projects\tests\SimpleChat\Vasilev.SimpleChat.WpfNetCore.Server\obj\Debug\netcoreapp3.1\Vasilev.SimpleChat.ConsNetCore.Server.dll
 E:\_projects\tests\SimpleChat\Vasilev.SimpleChat.WpfNetCore.Server\obj\Debug\netcoreapp3.1\Vasilev.SimpleChat.ConsNetCore.Server.pdb
+E:\_projects\tests\SimpleChat\Vasilev.SimpleChat.WpfNetCore.Server\bin\Debug\netcoreapp3.1\Vasilev.SimpleChat.ConsNetCore.Communication.dll
+E:\_projects\tests\SimpleChat\Vasilev.SimpleChat.WpfNetCore.Server\bin\Debug\netcoreapp3.1\Vasilev.SimpleChat.ConsNetCore.Communication.pdb
+E:\_projects\tests\SimpleChat\Vasilev.SimpleChat.WpfNetCore.Server\obj\Debug\netcoreapp3.1\Vasilev.SimpleChat.ConsNetCore.Server.csprojAssemblyReference.cache
+E:\_projects\tests\SimpleChat\Vasilev.SimpleChat.WpfNetCore.Server\obj\Debug\netcoreapp3.1\Vasilev.SimpleChat.ConsNetCore.Server.csproj.CopyComplete

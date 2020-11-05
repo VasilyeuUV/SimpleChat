@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Vasilev.SimpleChat.ConsNetCore.Communication.Models;
 using Vasilev.SimpleChat.ConsNetCore.Server.Models;
 
 namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
@@ -95,12 +96,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                     client.Stream = stream;
 
                     // 1-е сообщение для отправки клиенту
-                    MessageModel message = new MessageModel()
-                    {
-                        Author = _server.ServerName,
-                        Dtg = DateTime.Now,
-                        Message = "Приветствую Вас.\nНазовите Ваше имя."
-                    };
+                    MessageModel message = MessageModel.CreateModel(DateTime.Now, _server.ServerName, _server.ServerData.ServerFirstPhrase);
 
                     if (SendMessage(client, message))
                     {
@@ -136,8 +132,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                     }
                     if (response.Length > 0)
                     {
-                        string msg = response.ToString();
-                        client.ChatHistory.Add((new MessageModel()).ConvertToMessageModel(msg));
+                        client.ChatHistory.Add((MessageModel.CreateModel(response.ToString())));
                     }
                 }
                 catch (SocketException ex) when (ex.ErrorCode == 10004)
