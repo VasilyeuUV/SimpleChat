@@ -16,7 +16,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 {
     internal class ClientViewModel : ViewModelBase
     {
-        Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+        private Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
 
 
         #region UserName
@@ -80,41 +80,60 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                         IsConnected = false,
                         Port = 8888
                     };
+                    _connection.ConnectChanged += _connection_ConnectChanged;
+
                     string host = Dns.GetHostName();
                     _connection.Ip = Dns.GetHostEntry(host).AddressList[0];
+                    _connection.Client = new TcpClient();
+
                     Task doWork = new Task(async () => await DoWorkAsync(ref _chat));
                     doWork.Start();
                 }
                 return _connection;
             }
         }
+        private void _connection_ConnectChanged(object sender, EventArgs e)
+        {
+            OnPropertyChanged("Connection");
+        }
 
+        /// <summary>
+        /// Work Process
+        /// </summary>
+        /// <param name="chat"></param>
+        /// <returns></returns>
         private Task DoWorkAsync(ref ObservableCollection<MessageModel> chat)
         {
-            TcpClient client = new TcpClient();
+            //TcpClient client = new TcpClient();
 
-            ///try to connect to server
-            while (!Connection.IsConnected)
+            while (true)
             {
-                Connection.IsConnected = ConnectToServer(ref client);
-                Task.Delay(1000);
-            }
-
-            while (Connection.IsConnected)
-            {
-                Task.Delay(10);
-                try
+                if (!Connection.IsConnected)
                 {
-                    NetworkStream stream = client.GetStream();
-                    ReadData(stream);
+                    ///try to connect to server
+                    Connection.IsConnected = ConnectToServer(Connection.Client);
+                    Task.Delay(1000);
                 }
-                catch (Exception ex)   
+                else
                 {
-                    throw new Exception(ex.Message);
-                }    
+                    Task.Delay(10);
+                    try
+                    {
+                        NetworkStream stream = Connection.Client.GetStream();
+                        GetMessage(stream);
+                    }
+                    catch (SocketException ex) when (ex.ErrorCode == 10004)
+                    {
+                        Connection.IsConnected = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
+                    }
+                }
             }
-            client.Close();
-            return default;
+            //client.Close();
+            //return default;
         }
 
 
@@ -124,7 +143,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
         /// <param name="ip"></param>
         /// <param name="port"></param>
         /// <returns></returns>
-        private bool ConnectToServer(ref TcpClient client)
+        private bool ConnectToServer(TcpClient client)
         {
             try
             {
@@ -164,29 +183,27 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
         public ObservableCollection<MessageModel> Chat => _chat ??= new ObservableCollection<MessageModel>();
 
 
-        private void ReadData(NetworkStream stream)
+        private void GetMessage(NetworkStream stream)
         {
             try
             {
-                byte[] data = new byte[256];
+                byte[] bytes = new byte[256];
                 StringBuilder response = new StringBuilder();
 
-                do
+                int bytesLength = 0;
+                while ((bytesLength = stream.Read(bytes, 0, bytes.Length)) > 0)
                 {
-                    int bytes = stream.Read(data, 0, data.Length);
-                    response.Append(Encoding.UTF8.GetString(data, 0, bytes));
+                    response.Append(Encoding.UTF8.GetString(bytes, 0, bytesLength));
                 }
-                while (stream.DataAvailable); // пока данные есть в потоке
-
-                //using (stream)
-                //{
-
-                //}
-                dispatcher.Invoke(new Action(() => Chat.Add(new MessageModel(response.ToString()))));
+                if (response.Length > 0)
+                {
+                    this._dispatcher.Invoke(new Action(() => Chat.Add(new MessageModel(response.ToString()))));
+                }               
             }
             catch (SocketException ex)
             {
                 MessageBox.Show("SocketException: {0}", ex.Message);
+                Connection.IsConnected = false;
                 throw new SocketException();
             }
             catch (Exception ex)
@@ -195,6 +212,36 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                 throw new Exception();
             }
         }
+
+        /// <summary>
+        /// Send Message
+        /// </summary>
+        /// <param name="userMessage"></param>
+        private void SendMessage(string userMessage)
+        {
+            if (string.IsNullOrWhiteSpace(userMessage)) { return; }
+
+            string msg = string.Format($"{UserName}\n{userMessage}");
+
+            using (NetworkStream stream = Connection.Client.GetStream())
+            {
+                try
+                {
+                    byte[] bytes = Encoding.UTF8.GetBytes(msg);
+                    stream.Write(bytes, 0, bytes.Length);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+
+                //Task doWork = new Task(async () => await ChatDoWorkAsync(client));
+                //doWork.Start();
+            }
+        }
+
+
+
 
         #endregion
 
@@ -206,21 +253,21 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
             _sendMessageCommand ??= new LambdaCommand(
                 obj => 
                 {
-                    Chat.Add( new MessageModel(UserMessage)
+                    if (string.IsNullOrWhiteSpace(UserName))
                     {
-                        Author = UserName,
-                    });
+                        UserName = UserMessage;
+                    }
+                    SendMessage(UserMessage);
                     UserMessage = string.Empty;
-                    //SelectedMessage = Chat.Last();
+                    SelectedMessage = Chat.Last();
                 },
                 obj =>
                 {
-                    return (!Connection.IsConnected 
-                            || string.IsNullOrWhiteSpace(UserMessage)) 
+                    return (/*!Connection.IsConnected */
+                            /*||*/ string.IsNullOrWhiteSpace(UserMessage)) 
                             ? false : true;
                 }
                 );
-
 
         #endregion
 

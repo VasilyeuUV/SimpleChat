@@ -24,7 +24,7 @@
            
             <!--Connected-->
             <StatusBarItem>
-                <TextBlock Text="{Binding Client.Connection.IsConnected, StringFormat=Connected: {0}}"/>
+                <TextBlock Text="{Binding Client.Connection.IsConnected, StringFormat=Connected: {0}, UpdateSourceTrigger=PropertyChanged}"/>
             </StatusBarItem>
 
             <!--IP Adress-->

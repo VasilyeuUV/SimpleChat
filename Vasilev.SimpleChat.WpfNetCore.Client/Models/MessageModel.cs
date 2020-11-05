@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 namespace Vasilev.SimpleChat.WpfNetCore.Client.Models
 {
@@ -21,7 +20,6 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.Models
             if (msg.Length >= 3)
             {
                 Author = msg[1];
-                //Message = string.Join("", msg, 2, msg.Length - 1);
                 Message = msg.Skip(2).Aggregate((rez, item) => $"{rez}\n{item}").Trim();
                 return;
             }

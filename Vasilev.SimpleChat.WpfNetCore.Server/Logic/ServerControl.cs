@@ -57,13 +57,10 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             {
                 _server?.TcpListener.Start();
 
-                while (_server.TcpListener != null)
+                while (true)
                 {
                     TcpClient tcpClient = _server?.TcpListener?.AcceptTcpClient();
-                    if (tcpClient != null)
-                    {
-                        AddNewClient(tcpClient);
-                    }
+                    AddNewClient(tcpClient);
                 }
             }
             catch (SocketException ex) when (ex.ErrorCode == 10004)
@@ -77,7 +74,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             finally
             {
                 ServerStop();
-            }
+            }            
         }
 
         /// <summary>
@@ -95,13 +92,12 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                 {
                     client.Stream = stream;
 
-                    // сообщение для отправки клиенту
-                    string response = "Приветствую Вас.\nНазовите Ваше имя.";
+                    // 1-е сообщение для отправки клиенту
                     MessageModel message = new MessageModel()
                     {
                         Author = _server.ServerName,
                         Dtg = DateTime.Now,
-                        Message = response
+                        Message = "Приветствую Вас.\nНазовите Ваше имя."
                     };
 
                     if (SendMessage(client, message))
@@ -113,11 +109,6 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
 
                     //Task doWork = new Task(async () => await ChatDoWorkAsync(client));
                     //doWork.Start();
-
-
-
-                    // закрываем поток
-                    //stream.Close();
                 }
             }
             catch (Exception)
@@ -131,10 +122,10 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             try
             {
                 // преобразуем сообщение в массив байтов
-                byte[] data = Encoding.UTF8.GetBytes(message.ToString());
+                byte[] data = Encoding.UTF8.GetBytes(message?.ToString());
 
                 // отправка сообщения
-                client.Stream.Write(data, 0, data.Length);
+                client?.Stream.Write(data, 0, data.Length);
 
                 return true;
             }
