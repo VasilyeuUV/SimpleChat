@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vasilev.SimpleChat.WpfNetCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vasilev.SimpleChat.ConsNetCore.Server", "Vasilev.SimpleChat.WpfNetCore.Server\Vasilev.SimpleChat.ConsNetCore.Server.csproj", "{89E30A8C-B02D-4721-BD5D-FE7875492FE3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vasilev.SimpleChat.ConsNetCore.Communication", "Vasilev.SimpleChat.ConsNetCore.Communication\Vasilev.SimpleChat.ConsNetCore.Communication.csproj", "{1826319F-F943-4511-8510-2207E329FAD4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{89E30A8C-B02D-4721-BD5D-FE7875492FE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89E30A8C-B02D-4721-BD5D-FE7875492FE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89E30A8C-B02D-4721-BD5D-FE7875492FE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1826319F-F943-4511-8510-2207E329FAD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1826319F-F943-4511-8510-2207E329FAD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1826319F-F943-4511-8510-2207E329FAD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1826319F-F943-4511-8510-2207E329FAD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
