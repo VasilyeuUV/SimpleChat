@@ -7,7 +7,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
 {
     public class CommunicationModel : ITransmitable, IReceiveable
     {
-        private NetworkStream _stream = null;
+        private TcpClient _client = null;
 
         /// <summary>
         /// CTOR
@@ -15,7 +15,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
         /// <param name="client"></param>
         public CommunicationModel(TcpClient client)
         {
-            this._stream = client.GetStream();
+            this._client = client;
         }
 
 
@@ -26,17 +26,32 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
         /// <param name="msg"></param>
         public string ReceiveMessage()
         {
-            byte[] bytes = new byte[64];                    // буфер для получаемых данных
-            StringBuilder builder = new StringBuilder();
-            int bytesLength = 0;
-            do
+            NetworkStream stream = null;
+            StringBuilder response = new StringBuilder();
+            try
             {
-                bytesLength = _stream.Read(bytes, 0, bytes.Length);
-                builder.Append(Encoding.Unicode.GetString(bytes, 0, bytesLength));
-            }
-            while (_stream.DataAvailable);
+                stream = _client?.GetStream();
+                if (stream.CanRead)
+                {
+                    byte[] bytes = new byte[256];
 
-            return builder.ToString();
+                    int bytesLength = 0;
+                    while ((bytesLength = stream.Read(bytes, 0, bytes.Length)) > 0)
+                    {
+                        response.Append(Encoding.UTF8.GetString(bytes, 0, bytesLength));
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+            finally
+            {
+                //stream?.Close();
+            }
+
+            return response.ToString();
         }
 
         /// <summary>
@@ -45,15 +60,32 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
         /// <param name="msg"></param>
         public void TransmitMessage(string msg)
         {
+            NetworkStream stream = null;
             try
-            {                
-                byte[] data = Encoding.UTF8.GetBytes(msg?.ToString());      // преобразуем сообщение в массив байтов              
-                _stream.Write(data, 0, data.Length);                        // отправка сообщения
-            }
-            catch (Exception)
             {
-                return;
+                stream = _client?.GetStream();
+                if (stream.CanWrite)
+                {
+                    try
+                    {
+                        byte[] data = Encoding.UTF8.GetBytes(msg?.ToString());      // преобразуем сообщение в массив байтов              
+                        stream.Write(data, 0, data.Length);                        // отправка сообщения
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                //stream?.Close();
             }
         }
     }
 }
+

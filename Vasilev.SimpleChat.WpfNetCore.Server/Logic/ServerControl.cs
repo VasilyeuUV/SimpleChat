@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 using Vasilev.SimpleChat.ConsNetCore.Communication.Models;
 using Vasilev.SimpleChat.ConsNetCore.Server.Models;
@@ -38,15 +37,12 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
         }
 
         public ICollection<string> GetQuestions() =>
-            _server?.ServerData.QaDictionary.SelectMany(x => x.Key).ToList();
+            _server?.ServerData.QaDictionary.Select(x => x.Key).ToList();
 
         public ICollection<string> GetClients() =>
             _server?.ServerData.ConnectedClients.Select(x => x.NickName).ToList();
 
         #endregion
-
-
-
 
 
         /// <summary>
@@ -62,8 +58,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                 while (true)
                 {
                     TcpClient tcpClient = _server?.TcpListener?.AcceptTcpClient();
-                    AddNewClient(tcpClient);
-
+                    ListenClientAsync(tcpClient);            
                 }
             }
             catch (SocketException ex) when (ex.ErrorCode == 10004)
@@ -80,102 +75,51 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             }            
         }
 
-        /// <summary>
-        /// Add new TCP client
-        /// </summary>
-        /// <param name="tcpClient"></param>
-        private void AddNewClient(TcpClient tcpClient)
+
+        private async void ListenClientAsync(TcpClient tcpClient)
+        {
+            ClientModel client = new ClientModel()
+            {
+                Communication = new CommunicationModel(tcpClient),
+            };
+            _server.ServerData.ConnectedClients.Add(client);
+
+            await Task.Run(() => ListenClient(_server, client));
+        }
+
+        private void ListenClient(ServerModel server, ClientModel client)
         {
             try
             {
-                ClientModel client = new ClientModel();
-
-                // получаем сетевой поток для чтения и записи
-                using (NetworkStream stream = tcpClient.GetStream())
+                NetworkStream stream = client. GetStream();
+                while (true)
                 {
-                    client.Stream = stream;
-
-                    // 1-е сообщение для отправки клиенту
-                    MessageModel message = MessageModel.CreateModel(DateTime.Now, _server.ServerName, _server.ServerData.ServerFirstPhrase);
-
-                    if (SendMessage(client, message))
+                    try
                     {
-                        client.ChatHistory.Add(message);
+                        message = GetMessage();
+                        message = String.Format("{0}: {1}", userName, message);
+                        Console.WriteLine(message);
+                        server.BroadcastMessage(message, this.Id);
                     }
-                    _server.ServerData.ConnectedClients.Add(client);
-
-
-                    Task clientChatDoWork = new Task(async () => await ClientChatDoWorkAsync(client));
-                    clientChatDoWork.Start();
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        private Task ClientChatDoWorkAsync(ClientModel client)
-        {
-            while(true)
-            {
-                Task.Delay(10);
-                try
-                {
-                    byte[] bytes = new byte[256];
-                    StringBuilder response = new StringBuilder();
-
-                    int bytesLength = 0;
-                    while ((bytesLength = client.Stream.Read(bytes, 0, bytes.Length)) > 0)
+                    catch
                     {
-                        response.Append(Encoding.UTF8.GetString(bytes, 0, bytesLength));
-                    }
-                    if (response.Length > 0)
-                    {
-                        client.ChatHistory.Add((MessageModel.CreateModel(response.ToString())));
+                        message = String.Format("{0}: покинул чат", userName);
+                        Console.WriteLine(message);
+                        server.BroadcastMessage(message, this.Id);
+                        break;
                     }
                 }
-                catch (SocketException ex) when (ex.ErrorCode == 10004)
-                {
-                    throw new SocketException();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                // в случае выхода из цикла закрываем ресурсы
+                server.RemoveConnection(this.Id);
+                Close();
             }
         }
-
-
-
-        private bool SendMessage(ClientModel client, MessageModel message)
-        {
-            try
-            {
-                // преобразуем сообщение в массив байтов
-                byte[] data = Encoding.UTF8.GetBytes(message?.ToString());
-
-                // отправка сообщения
-                client?.Stream.Write(data, 0, data.Length);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-
-        //private async Task ChatDoWorkAsync(ClientModel client)
-        //{
-        //    using (client.Stream)
-        //    {
-        //        byte[] data = Encoding.Unicode.GetBytes(message);
-        //        clients[0].Stream.Write(data, 0, data.Length); //передача данных
-        //    }
-
-        //}
-
     }
 }

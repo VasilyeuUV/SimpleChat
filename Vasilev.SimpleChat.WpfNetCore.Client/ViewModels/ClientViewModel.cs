@@ -61,9 +61,81 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
         #endregion
 
+        #region SelectedMessage
+        private MessageModel _selectedMessage = null;
+
+        /// <summary>
+        /// Selected Message
+        /// </summary>
+        public MessageModel SelectedMessage
+        {
+            get => _selectedMessage;
+            set => Set(ref _selectedMessage, value);
+        }
+        #endregion
+
+        #region CHAT
+
+        private ObservableCollection<MessageModel> _chat = null;
+
+        /// <summary>
+        /// Chat
+        /// </summary>
+        public ObservableCollection<MessageModel> Chat => _chat ??= new ObservableCollection<MessageModel>();
+
+        #endregion
+
+        #region Communication
+
+        private CommunicationModel _communication = null;
+        public CommunicationModel Communication
+        { 
+            get
+            {
+                if (_communication == null)
+                {
+                    _communication = new CommunicationModel(Connection.Client);
+                }
+                return _communication;
+            }
+        }
+
+        #endregion
+
+        //private void GetMessage(NetworkStream stream)
+        //{
+        //    try
+        //    {
+        //        byte[] bytes = new byte[256];
+        //        StringBuilder response = new StringBuilder();
+
+        //        int bytesLength = 0;
+        //        while ((bytesLength = stream.Read(bytes, 0, bytes.Length)) > 0)
+        //        {
+        //            response.Append(Encoding.UTF8.GetString(bytes, 0, bytesLength));
+        //        }
+        //        if (response.Length > 0)
+        //        {
+        //            MessageModel msg = MessageModel.CreateModel(response.ToString());
+        //            if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }
+        //        }
+        //    }
+        //    catch (SocketException ex)
+        //    {
+        //        MessageBox.Show("SocketException: {0}", ex.Message);
+        //        Connection.IsConnected = false;
+        //        throw new SocketException();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("Exception: {0}", ex.Message);
+        //        throw new Exception();
+        //    }
+        //}
 
 
-        #region CONNECTION & WORK
+
+        #region CONNECTION
 
         private ConnectionModel _connection = null;
 
@@ -87,55 +159,41 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                     _connection.Ip = Dns.GetHostEntry(host).AddressList[0];
                     _connection.Client = new TcpClient();
 
-                    Task doWork = new Task(async () => await DoWorkAsync(ref _chat));
-                    doWork.Start();
+                    ListenServerAsync();
                 }
                 return _connection;
             }
         }
+
         private void _connection_ConnectChanged(object sender, EventArgs e)
         {
             OnPropertyChanged("Connection");
         }
 
-        /// <summary>
-        /// Work Process
-        /// </summary>
-        /// <param name="chat"></param>
-        /// <returns></returns>
-        private Task DoWorkAsync(ref ObservableCollection<MessageModel> chat)
-        {
-            //TcpClient client = new TcpClient();
 
+        private async void ListenServerAsync()
+        {
+            await Task.Run(() => ListenServer()); 
+        }
+
+
+        private void ListenServer()
+        {
             while (true)
             {
                 if (!Connection.IsConnected)
                 {
-                    ///try to connect to server
-                    Connection.IsConnected = ConnectToServer(Connection.Client);
+                    Connection.IsConnected = ConnectToServer(Connection.Client);    // try to connect to server
                     Task.Delay(1000);
                 }
                 else
                 {
                     Task.Delay(10);
-                    try
-                    {
-                        NetworkStream stream = Connection.Client.GetStream();
-                        GetMessage(stream);
-                    }
-                    catch (SocketException ex) when (ex.ErrorCode == 10004)
-                    {
-                        Connection.IsConnected = false;
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception(ex.Message);
-                    }
+                    GetMessage();
                 }
             }
-            //client.Close();
-            //return default;
         }
+
 
 
         /// <summary>
@@ -153,107 +211,79 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                 return true;
             }
             catch (Exception ex)
-            {                
+            {
                 return false;
             }
         }
 
 
-        #endregion
 
-
-        #region CHAT
-
-        private MessageModel _selectedMessage = null;
-
-        /// <summary>
-        /// Selected Message
-        /// </summary>
-        public MessageModel SelectedMessage
+        private void GetMessage()
         {
-            get => _selectedMessage;
-            set => Set(ref _selectedMessage, value);
-        }
-
-
-        private ObservableCollection<MessageModel> _chat = null;
-
-        /// <summary>
-        /// Chat
-        /// </summary>
-        public ObservableCollection<MessageModel> Chat => _chat ??= new ObservableCollection<MessageModel>();
-
-
-        private void GetMessage(NetworkStream stream)
-        {
-            try
-            {
-                byte[] bytes = new byte[256];
-                StringBuilder response = new StringBuilder();
-
-                int bytesLength = 0;
-                while ((bytesLength = stream.Read(bytes, 0, bytes.Length)) > 0)
-                {
-                    response.Append(Encoding.UTF8.GetString(bytes, 0, bytesLength));
-                }
-                if (response.Length > 0)
-                {
-                    MessageModel msg = MessageModel.CreateModel(response.ToString());
-                    if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }                    
-                }               
-            }
-            catch (SocketException ex)
-            {
-                MessageBox.Show("SocketException: {0}", ex.Message);
-                Connection.IsConnected = false;
-                throw new SocketException();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Exception: {0}", ex.Message);
-                throw new Exception();
-            }
-        }
-
-        /// <summary>
-        /// Send Message
-        /// </summary>
-        /// <param name="userMessage"></param>
-        private void SendMessage(string userMessage)
-        {
-            if (string.IsNullOrWhiteSpace(userMessage)) { return; }
-
-            string msg = string.Format($"{UserName}\n{userMessage}");
-
-            using (NetworkStream stream = Connection.Client.GetStream())
+            while (true)
             {
                 try
                 {
-                    byte[] bytes = Encoding.UTF8.GetBytes(msg);
-                    stream.Write(bytes, 0, bytes.Length);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
+                    NetworkStream stream = Connection.Client.GetStream();
+                    byte[] data = new byte[64]; // буфер для получаемых данных
+                    StringBuilder builder = new StringBuilder();
+                    int bytes = 0;
+                    do
+                    {
+                        bytes = stream.Read(data, 0, data.Length);
+                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                    }
+                    while (stream.DataAvailable);
 
-                //Task doWork = new Task(async () => await ChatDoWorkAsync(client));
-                //doWork.Start();
+                    string message = builder.ToString();
+                    if (message.Length > 0)
+                    {
+                        MessageModel msg = MessageModel.CreateModel(message);
+                        if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception("Соединение прервано " + ex.Message);
+                }
             }
+
+            //try
+            //{
+            //    string response = Communication.ReceiveMessage();
+            //    if (response.Length > 0)
+            //    {
+            //        MessageModel msg = MessageModel.CreateModel(response.ToString());
+            //        if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }
+            //    }
+            //}
+            //catch (SocketException ex) when (ex.ErrorCode == 10004)
+            //{
+            //    throw new SocketException();
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new Exception(ex.Message);
+            //}
         }
 
 
 
-
         #endregion
+
+
+
+
 
 
         #region COMMANDS
 
+        #region SendMessageCommand
+
         private ICommand _sendMessageCommand = null;
         public ICommand SendMessageCommand =>
             _sendMessageCommand ??= new LambdaCommand(
-                obj => 
+                obj =>
                 {
                     if (string.IsNullOrWhiteSpace(UserName))
                     {
@@ -261,15 +291,37 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                     }
                     SendMessage(UserMessage);
                     UserMessage = string.Empty;
-                    SelectedMessage = Chat.Last();
+                    SelectedMessage = Chat.Count > 0 ? Chat.Last() : null;
                 },
                 obj =>
                 {
                     return (/*!Connection.IsConnected */
-                            /*||*/ string.IsNullOrWhiteSpace(UserMessage)) 
+                            /*||*/ string.IsNullOrWhiteSpace(UserMessage))
                             ? false : true;
                 }
                 );
+
+
+
+        /// <summary>
+        /// Send Message
+        /// </summary>
+        /// <param name = "userMessage" ></ param >
+        private void SendMessage(string userMessage)
+        {
+            if (string.IsNullOrWhiteSpace(userMessage)) { return; }
+
+            string msg = string.Format($"{UserName}\n{userMessage}");
+            //Communication.TransmitMessage(msg);
+
+            NetworkStream stream = Connection.Client.GetStream();
+            byte[] data = Encoding.Unicode.GetBytes(msg);
+            stream.Write(data, 0, data.Length);
+        } 
+
+        #endregion
+
+
 
         #endregion
 

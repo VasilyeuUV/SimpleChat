@@ -20,17 +20,22 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
         #region QuestionAnswerData
 
         internal string ServerFirstPhrase { get; } = "Приветствую Вас.\nНазовите Ваше имя.";
+        internal string ServerErrorPhrase { get; } = "Не могу ответить.\nДанный вопрос не поддерживается.";
 
+        private List<string> _helloAnswer = new List<string>() { "Привет", "Здоров", "Здравствуй", "Доброго"  };
+        private List<string> _howAreYouAnswer = new List<string>() { "Нормально", "Отлично", "Сносно", "Не очень" };
+        private List<string> _whatAreYouDoingAnswer = new List<string>() { "Туплю", "Думаю", "Отдыхаю", "Работаю" };
+        private List<string> _willYouAnswer = new List<string>() { "Нет", "Да", "Возможно", "Не исключено" };
+        private List<string> _goodBuyAnswer = new List<string>() { "Пока", "Счастливо", "Удачи", "Всего доброго" };
 
-        private IDictionary<string[], string[]> _qaDictionary = default;
-
-        internal IDictionary<string[], string[]> QaDictionary => _qaDictionary ??= new Dictionary<string[], string[]>()
+        private IDictionary<string, List<string>> _qaDictionary = default;
+        internal IDictionary<string, List<string>> QaDictionary => _qaDictionary ??= new Dictionary<string, List<string>>()
         {
-            [new[] { "привет", "здоров", "здравствуй", "доброго" }] = new[] { "Привет", "Здоров", "Здравствуй", "Доброго" },
-            [new[] { "как дела", }] = new[] { "Нормально", "Отлично", "Сносно", "Не очень" },
-            [new[] { "что делаешь", }] = new[] { "Туплю", "Думаю", "Отдыхаю", "Работаю" },
-            [new[] { "будешь", }] = new[] { "Нет", "Да", "Возможно", "Не исключено" },
-            [new[] { "пока" }] = new[] { "Пока", "Счастливо", "Удачи", "Всего доброго" }
+            ["привет"] = _helloAnswer,
+            ["как дела"] = _howAreYouAnswer,
+            ["что делаешь"] = _whatAreYouDoingAnswer,
+            ["будешь"] = _willYouAnswer,
+            ["пока"] = _goodBuyAnswer
         };
 
         #endregion

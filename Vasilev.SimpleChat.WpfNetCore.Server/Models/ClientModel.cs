@@ -11,7 +11,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
 
         internal string NickName { get; private set; }
 
-        internal NetworkStream Stream { get; set; }
+        internal CommunicationModel Communication { get; set; }
 
         internal ICollection<MessageModel> ChatHistory { get; }
 
