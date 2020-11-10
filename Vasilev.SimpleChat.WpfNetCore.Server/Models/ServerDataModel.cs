@@ -20,6 +20,8 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
         #region QuestionAnswerData
 
         internal string ServerFirstPhrase { get; } = "Приветствую Вас.\nНазовите Ваше имя.";
+        internal string ServerSecondPhrase { get; } = "Что интересует, ";
+        //internal string ServerFirstPhrase { get; } = "Hello.\nWhat's is youre name?";
         internal string ServerErrorPhrase { get; } = "Не могу ответить.\nДанный вопрос не поддерживается.";
 
         private List<string> _helloAnswer = new List<string>() { "Привет", "Здоров", "Здравствуй", "Доброго"  };

@@ -43,7 +43,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
                 messageModel.Message = msg.Skip(2).Aggregate((rez, item) => $"{rez}\n{item}").Trim();
                 return messageModel;
             }
-            return null;
+            return new MessageModel() { Dtg = DateTime.Now, Author = "???", Message = message};
         }
 
         /// <summary>

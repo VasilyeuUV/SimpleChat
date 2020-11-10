@@ -86,6 +86,11 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
                 //stream?.Close();
             }
         }
+
+        public NetworkStream GetStream()
+        {
+            return _client.GetStream();
+        }
     }
 }
 

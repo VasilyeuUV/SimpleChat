@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -220,33 +221,65 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
         private void GetMessage()
         {
-            while (true)
+            NetworkStream stream = Connection.Client.GetStream();
+            StringBuilder response = new StringBuilder();
+            if (stream.CanRead)
             {
+                byte[] data = new byte[256]; // буфер для получаемых данных
+                int bytesLength = 0;
+
                 try
                 {
-                    NetworkStream stream = Connection.Client.GetStream();
-                    byte[] data = new byte[64]; // буфер для получаемых данных
-                    StringBuilder builder = new StringBuilder();
-                    int bytes = 0;
                     do
                     {
-                        bytes = stream.Read(data, 0, data.Length);
-                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                        bytesLength = stream.Read(data, 0, data.Length);
+                        response.Append(Encoding.UTF8.GetString(data, 0, bytesLength));
                     }
                     while (stream.DataAvailable);
-
-                    string message = builder.ToString();
-                    if (message.Length > 0)
-                    {
-                        MessageModel msg = MessageModel.CreateModel(message);
-                        if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }
-                    }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    throw new Exception("Соединение прервано " + ex.Message);
+
+                    MessageBox.Show(ex.Message);
                 }
             }
+
+            string message = response.ToString();
+            if (message.Length > 0)
+            {
+                MessageModel msg = MessageModel.CreateModel(message);
+                if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }
+            }
+
+
+            //while (true)
+            //{
+            //    try
+            //    {
+            //        NetworkStream stream = Connection.Client.GetStream();
+            //        byte[] data = new byte[256]; // буфер для получаемых данных
+            //        StringBuilder builder = new StringBuilder();
+            //        int bytes = 0;
+            //        do
+            //        {
+            //            bytes = stream.Read(data, 0, data.Length);
+            //            //data = Encoding.UTF8.GetBytes("Строка для конвертации");
+            //            builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
+            //        }
+            //        while (stream.DataAvailable);
+
+            //        string message = builder.ToString();
+            //        if (message.Length > 0)
+            //        {
+            //            MessageModel msg = MessageModel.CreateModel(message);
+            //            if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        throw new Exception("Соединение прервано " + ex.Message);
+            //    }
+            //}
 
             //try
             //{
@@ -312,11 +345,11 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
             if (string.IsNullOrWhiteSpace(userMessage)) { return; }
 
             string msg = string.Format($"{UserName}\n{userMessage}");
-            //Communication.TransmitMessage(msg);
+            Communication.TransmitMessage(msg);
 
-            NetworkStream stream = Connection.Client.GetStream();
-            byte[] data = Encoding.Unicode.GetBytes(msg);
-            stream.Write(data, 0, data.Length);
+            //NetworkStream stream = Connection.Client.GetStream();
+            //byte[] data = Encoding.UTF8.GetBytes(msg);
+            //stream.Write(data, 0, data.Length);
         } 
 
         #endregion

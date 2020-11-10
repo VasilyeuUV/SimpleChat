@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 using Vasilev.SimpleChat.ConsNetCore.Communication.Models;
 using Vasilev.SimpleChat.ConsNetCore.Server.Models;
@@ -51,14 +52,49 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
 
         private void GetMessage()
         {
+            //NetworkStream stream = _client.GetStream();
+            //StringBuilder response = new StringBuilder();
+            //if (stream.CanRead)
+            //{
+            //    byte[] data = new byte[256]; // буфер для получаемых данных
+            //    int bytesLength = 0;
+
+            //    try
+            //    {
+            //        do
+            //        {
+            //            bytesLength = stream.Read(data, 0, data.Length);
+            //            response.Append(Encoding.UTF8.GetString(data, 0, bytesLength));
+            //        }
+            //        while (stream.DataAvailable);
+            //    }
+            //    catch (Exception ex)
+            //    {
+
+            //        MessageBox.Show(ex.Message);
+            //    }
+
+
+            //}
+
+            //string message = response.ToString();
+            //if (message.Length > 0)
+            //{
+            //    MessageModel msg = MessageModel.CreateModel(message);
+            //    if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }
+            //}
+
+
+
+
             try
             {
                 string response = _client.Communication.ReceiveMessage();
                 if (response.Length > 0)
                 {
                     MessageModel msg = MessageModel.CreateModel(response.ToString());
-                    if (msg != null) 
-                    { 
+                    if (msg != null)
+                    {
                         _client?.ChatHistory.Add(msg);
                         SendMessage(response);
                         Task.Delay(1000);
@@ -81,9 +117,9 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             if (string.IsNullOrWhiteSpace(msg)) { return; }
             if (string.IsNullOrWhiteSpace(author)) { author = _server.ServerName; }
 
-            MessageModel firstMessage = MessageModel.CreateModel(DateTime.Now, author, msg);
+            MessageModel message = MessageModel.CreateModel(DateTime.Now, author, msg);
 
-            _client.Communication.TransmitMessage(firstMessage.ToString());
+            _client.Communication.TransmitMessage(message.ToString());
         }
 
 

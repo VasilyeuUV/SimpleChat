@@ -9,7 +9,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
     {
         internal Guid Id { get; private set; }
 
-        internal string NickName { get; private set; }
+        internal string NickName { get; set; }
 
         internal CommunicationModel Communication { get; set; }
 
@@ -21,13 +21,11 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
         /// <summary>
         /// CTOR
         /// </summary>
-        internal ClientModel(string nickName = "NoName")
+        internal ClientModel(string nickName = "")
         {
             this.Id = new Guid();
             this.NickName = nickName;
             this.ChatHistory = new List<MessageModel>();
         }
-
-
     }
 }
