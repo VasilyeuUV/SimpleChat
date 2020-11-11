@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -95,45 +94,13 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
             {
                 if (_communication == null)
                 {
-                    _communication = new CommunicationModel(Connection.Client);
+                    _communication = new CommunicationModel(Connection.TcpClient);
                 }
                 return _communication;
             }
         }
 
         #endregion
-
-        //private void GetMessage(NetworkStream stream)
-        //{
-        //    try
-        //    {
-        //        byte[] bytes = new byte[256];
-        //        StringBuilder response = new StringBuilder();
-
-        //        int bytesLength = 0;
-        //        while ((bytesLength = stream.Read(bytes, 0, bytes.Length)) > 0)
-        //        {
-        //            response.Append(Encoding.UTF8.GetString(bytes, 0, bytesLength));
-        //        }
-        //        if (response.Length > 0)
-        //        {
-        //            MessageModel msg = MessageModel.CreateModel(response.ToString());
-        //            if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }
-        //        }
-        //    }
-        //    catch (SocketException ex)
-        //    {
-        //        MessageBox.Show("SocketException: {0}", ex.Message);
-        //        Connection.IsConnected = false;
-        //        throw new SocketException();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("Exception: {0}", ex.Message);
-        //        throw new Exception();
-        //    }
-        //}
-
 
 
         #region CONNECTION
@@ -158,7 +125,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
                     string host = Dns.GetHostName();
                     _connection.Ip = Dns.GetHostEntry(host).AddressList[0];
-                    _connection.Client = new TcpClient();
+                    _connection.TcpClient = new TcpClient();
 
                     ListenServerAsync();
                 }
@@ -184,13 +151,13 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
             {
                 if (!Connection.IsConnected)
                 {
-                    Connection.IsConnected = ConnectToServer(Connection.Client);    // try to connect to server
+                    Connection.IsConnected = ConnectToServer();    // try to connect to server
                     Task.Delay(1000);
                 }
                 else
                 {
                     Task.Delay(10);
-                    GetMessage();
+                    GetMessage();                  
                 }
             }
         }
@@ -203,15 +170,14 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
         /// <param name="ip"></param>
         /// <param name="port"></param>
         /// <returns></returns>
-        private bool ConnectToServer(TcpClient client)
+        private bool ConnectToServer()
         {
             try
             {
-                client.Connect(Connection.Ip, Connection.Port);
-                MessageBox.Show("Подключен к серверу");
+                Connection.TcpClient.Connect(Connection.Ip, Connection.Port);    
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -219,95 +185,71 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
 
 
+        /// <summary>
+        /// Get server message
+        /// </summary>
         private void GetMessage()
         {
-            NetworkStream stream = Connection.Client.GetStream();
-            StringBuilder response = new StringBuilder();
-            if (stream.CanRead)
+            try
             {
-                byte[] data = new byte[256]; // буфер для получаемых данных
-                int bytesLength = 0;
+                NetworkStream stream = Connection.TcpClient.GetStream();
 
-                try
+                StringBuilder response = new StringBuilder();
+                if (stream.CanRead)
                 {
-                    do
+                    byte[] data = new byte[256]; // буфер для получаемых данных
+                    int bytesLength = 0;
+
+                    try
                     {
-                        bytesLength = stream.Read(data, 0, data.Length);
-                        response.Append(Encoding.UTF8.GetString(data, 0, bytesLength));
+                        do
+                        {
+                            bytesLength = stream.Read(data, 0, data.Length);
+                            response.Append(Encoding.UTF8.GetString(data, 0, bytesLength));
+                        }
+                        while (stream.DataAvailable);
                     }
-                    while (stream.DataAvailable);
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                        Connection.TcpClient.Close();
+                        Connection.IsConnected = false;
+                        return;
+                    }
                 }
-                catch (Exception ex)
+
+                string message = response.ToString();
+                if (message.Length > 0)
                 {
+                    MessageModel msg = MessageModel.CreateModel(message);
 
-                    MessageBox.Show(ex.Message);
+                    if (msg == null) { return; }
+                    if (msg.Message == "0")
+                    {
+                        msg.Message = "Сервер завершил сеанс";
+                        Disconnect();
+                    }
+
+                    this._dispatcher.Invoke(new Action(() => Chat.Add(msg)));
+
                 }
             }
-
-            string message = response.ToString();
-            if (message.Length > 0)
+            catch (Exception)
             {
-                MessageModel msg = MessageModel.CreateModel(message);
-                if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }
+                Connection.TcpClient.Close();
+                Connection.IsConnected = false;
             }
+        }
 
 
-            //while (true)
-            //{
-            //    try
-            //    {
-            //        NetworkStream stream = Connection.Client.GetStream();
-            //        byte[] data = new byte[256]; // буфер для получаемых данных
-            //        StringBuilder builder = new StringBuilder();
-            //        int bytes = 0;
-            //        do
-            //        {
-            //            bytes = stream.Read(data, 0, data.Length);
-            //            //data = Encoding.UTF8.GetBytes("Строка для конвертации");
-            //            builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
-            //        }
-            //        while (stream.DataAvailable);
-
-            //        string message = builder.ToString();
-            //        if (message.Length > 0)
-            //        {
-            //            MessageModel msg = MessageModel.CreateModel(message);
-            //            if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        throw new Exception("Соединение прервано " + ex.Message);
-            //    }
-            //}
-
-            //try
-            //{
-            //    string response = Communication.ReceiveMessage();
-            //    if (response.Length > 0)
-            //    {
-            //        MessageModel msg = MessageModel.CreateModel(response.ToString());
-            //        if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }
-            //    }
-            //}
-            //catch (SocketException ex) when (ex.ErrorCode == 10004)
-            //{
-            //    throw new SocketException();
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw new Exception(ex.Message);
-            //}
+        private void Disconnect()
+        {
+            Connection.IsConnected = false;
         }
 
 
 
         #endregion
-
-
-
-
-
 
         #region COMMANDS
 
@@ -346,10 +288,6 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
             string msg = string.Format($"{UserName}\n{userMessage}");
             Communication.TransmitMessage(msg);
-
-            //NetworkStream stream = Connection.Client.GetStream();
-            //byte[] data = Encoding.UTF8.GetBytes(msg);
-            //stream.Write(data, 0, data.Length);
         } 
 
         #endregion

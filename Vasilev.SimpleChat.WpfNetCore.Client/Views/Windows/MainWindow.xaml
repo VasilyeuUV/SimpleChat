@@ -67,9 +67,6 @@
                            Text="{Binding Client.UserName, StringFormat=User: {0}}" 
                            Margin="5"
                            />
-                <Button Grid.Column="1"
-                        Content="Connect" 
-                        Margin="3"/>
                 <Button Grid.Column="2"
                         Content="Exit"                         
                         Command="{Binding CloseApplicationCommand}"
@@ -95,10 +92,15 @@
                             <StackPanel Margin="5" 
                                         Orientation="Vertical"                                         
                                         >
-                                <TextBlock Text="{Binding Author, StringFormat={}{0}:}"
+                                <TextBlock Text="{Binding Author}"
                                            Foreground="Green"
                                            Margin="3,3,3,0"
                                            FontSize="14"
+                                           />
+                                <TextBlock Text="{Binding Dtg, StringFormat=dd.MM.yyyy HH:mm}"
+                                           Foreground="Green"
+                                           Margin="3,3,3,0"
+                                           FontSize="10"
                                            />
                                 <Separator/>
                                 <TextBlock Text="{Binding Message}" 

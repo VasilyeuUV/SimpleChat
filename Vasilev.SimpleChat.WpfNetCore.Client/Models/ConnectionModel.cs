@@ -7,7 +7,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.Models
     internal class ConnectionModel
     {
 
-        internal TcpClient Client { get; set; }
+        internal TcpClient TcpClient { get; set; }
 
         public IPAddress Ip { get; internal set; }
 

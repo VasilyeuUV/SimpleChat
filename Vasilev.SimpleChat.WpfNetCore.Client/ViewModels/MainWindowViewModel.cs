@@ -1,4 +1,7 @@
-﻿using Vasilev.SimpleChat.WpfNetCore.Client.ViewModels.Base;
+﻿using System.Windows;
+using System.Windows.Input;
+using Vasilev.SimpleChat.WpfNetCore.Client.Infrastructure.Commands;
+using Vasilev.SimpleChat.WpfNetCore.Client.ViewModels.Base;
 
 namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 {
@@ -64,6 +67,14 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
         #endregion
 
+
+        #region COMMANDS
+        private ICommand _closeApplicationCommand = null;
+        public ICommand CloseApplicationCommand =>
+            _closeApplicationCommand ??= new LambdaCommand(obj => { Application.Current.Shutdown(); });
+
+
+        #endregion
 
 
     }

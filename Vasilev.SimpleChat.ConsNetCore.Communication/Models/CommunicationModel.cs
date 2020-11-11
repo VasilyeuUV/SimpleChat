@@ -19,7 +19,6 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
         }
 
 
-
         /// <summary>
         /// Get message
         /// </summary>
@@ -42,9 +41,10 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return string.Empty;
+                throw new Exception("Клиент отключился");
+                //return string.Empty;
             }
             finally
             {
@@ -58,7 +58,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
         /// Send Message
         /// </summary>
         /// <param name="msg"></param>
-        public void TransmitMessage(string msg)
+        public bool TransmitMessage(string msg)
         {
             NetworkStream stream = null;
             try
@@ -79,14 +79,24 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                //throw new Exception(ex.Message);
+                return false;
             }
-            finally
-            {
-                //stream?.Close();
-            }
+            return true;
         }
 
+        /// <summary>
+        /// Close Communication
+        /// </summary>
+        public void CloseCommunication()
+        {
+            _client.Close();
+        }
+
+        /// <summary>
+        /// Get client stream
+        /// </summary>
+        /// <returns></returns>
         public NetworkStream GetStream()
         {
             return _client.GetStream();

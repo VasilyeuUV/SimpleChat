@@ -2,6 +2,6 @@
 {
     public interface ITransmitable
     {
-        public void TransmitMessage(string msg);
+        public bool TransmitMessage(string msg);
     }
 }

@@ -32,10 +32,9 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
         /// </summary>
         public void ServerStop()
         {
-            _server?.TcpListener?.Stop();
-            _server?.ServerData.Clear();
-            _server = null;
+            Disconnect();
         }
+
 
         public ICollection<string> GetQuestions() =>
             _server?.ServerData.QaDictionary.Select(x => x.Key).ToList();
@@ -45,6 +44,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
 
         #endregion
 
+        #region SERVER_LISTENER
 
         /// <summary>
         /// Start TCP Listener
@@ -59,24 +59,21 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                 while (true)
                 {
                     TcpClient tcpClient = _server?.TcpListener?.AcceptTcpClient();
-                    ListenClientAsync(tcpClient);            
+                    ListenClientAsync(tcpClient);
                 }
             }
-            catch (SocketException ex) when (ex.ErrorCode == 10004)
-            {
-                return;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            finally
+            catch (Exception)
             {
                 ServerStop();
-            }            
+            }
         }
+        #endregion
 
-
+        #region CURRENT CLIENT CHAT
+        /// <summary>
+        /// Async client listener
+        /// </summary>
+        /// <param name="tcpClient"></param>
         private async void ListenClientAsync(TcpClient tcpClient)
         {
             ClientModel client = new ClientModel()
@@ -84,10 +81,22 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                 Communication = new CommunicationModel(tcpClient),
             };
             _server.ServerData.ConnectedClients.Add(client);
-
-            await Task.Run(() => ListenClient(_server, client));
+            try
+            {
+                await Task.Run(() => ListenClient(_server, client));
+            }
+            catch (Exception ex)
+            {
+                string err = ex.Message;
+            }
+            
         }
 
+        /// <summary>
+        /// client listen process
+        /// </summary>
+        /// <param name="server"></param>
+        /// <param name="client"></param>
         private void ListenClient(ServerModel server, ClientModel client)
         {
             MessageModel message = MessageModel.CreateModel(DateTime.Now, _server.ServerName, _server.ServerData.ServerFirstPhrase);
@@ -98,31 +107,38 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                 Task.Delay(10);
                 GetMessage(client);
             }
-
-            //ClientChatProcess.Create(server, client);
         }
+        #endregion
 
-        //private void SendMessage(string msg, ClientModel client = null)
-        //{
-        //    if (string.IsNullOrWhiteSpace(msg)) { return; }
+        #region SEND_MESSAGE
 
-        //    string author = client?.NickName;
-        //    if (client == null) { author = _server.ServerName; }
-
-        //    MessageModel message = MessageModel.CreateModel(DateTime.Now, author, msg);
-
-        //    SendMessage(message);
-        //}
-
-
+        /// <summary>
+        /// Send Message
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="msg"></param>
         private void SendMessage(ClientModel client, MessageModel msg)
         {
             if (msg == null) { return; }
 
+            client.ChatHistory.Add(msg);
             client.Communication.TransmitMessage(msg.ToString());
         }
 
+        /// <summary>
+        /// Send Message to all connected Clients
+        /// </summary>
+        /// <param name="message"></param>
+        private void SendMessageAll(string message)
+        {
+            MessageModel msg = MessageModel.CreateModel(DateTime.Now, _server.ServerName, message);
+            foreach (var client in _server.ServerData.ConnectedClients)
+            {
+                SendMessage(client, msg);
+            }
+        }
 
+        #endregion
 
         /// <summary>
         /// Get messages
@@ -130,11 +146,14 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
         /// <param name="client"></param>
         private void GetMessage(ClientModel client)
         {
+
+
+
             NetworkStream stream = client.Communication.GetStream();
             StringBuilder response = new StringBuilder();
             if (stream.CanRead)
             {
-                byte[] data = new byte[256]; // буфер для получаемых данных
+                byte[] data = new byte[256]; 
                 int bytesLength = 0;
 
                 try
@@ -155,75 +174,34 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             string message = response.ToString();
             if (message.Length > 0)
             {
-                MessageModel msg = MessageModel.CreateModel(message);
-                if (msg != null) 
-                { 
-                    client.ChatHistory.Add(msg);
-                    SendMessage(client, msg);
-                }
+                MessageModel msg = MessageModel.CreateModel(DateTime.Now.ToString() + "\n" + message);
+                if (msg == null) { return; }
+               
+                SendMessage(client, msg);
 
                 if (client.ChatHistory.Count == 2)
                 {
                     client.NickName = msg.Author;
-                    msg = MessageModel.CreateModel(DateTime.Now, _server.ServerName, _server.ServerData.ServerSecondPhrase);                    
+                    msg = MessageModel.CreateModel(
+                        DateTime.Now,
+                        _server.ServerName, 
+                        _server.ServerData.ServerSecondPhrase + client.NickName + "?"
+                        );                    
                 }
                 else
                 {
                     msg = GetResponse(msg.Message);
                 }
-                client.ChatHistory.Add(msg);
                 SendMessage(client, msg);                
             }
-
-
-            //while (true)
-            //{
-            //    try
-            //    {
-            //        NetworkStream stream = Connection.Client.GetStream();
-            //        byte[] data = new byte[256]; // буфер для получаемых данных
-            //        StringBuilder builder = new StringBuilder();
-            //        int bytes = 0;
-            //        do
-            //        {
-            //            bytes = stream.Read(data, 0, data.Length);
-            //            //data = Encoding.UTF8.GetBytes("Строка для конвертации");
-            //            builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
-            //        }
-            //        while (stream.DataAvailable);
-
-            //        string message = builder.ToString();
-            //        if (message.Length > 0)
-            //        {
-            //            MessageModel msg = MessageModel.CreateModel(message);
-            //            if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        throw new Exception("Соединение прервано " + ex.Message);
-            //    }
-            //}
-
-            //try
-            //{
-            //    string response = Communication.ReceiveMessage();
-            //    if (response.Length > 0)
-            //    {
-            //        MessageModel msg = MessageModel.CreateModel(response.ToString());
-            //        if (msg != null) { this._dispatcher.Invoke(new Action(() => Chat.Add(msg))); }
-            //    }
-            //}
-            //catch (SocketException ex) when (ex.ErrorCode == 10004)
-            //{
-            //    throw new SocketException();
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw new Exception(ex.Message);
-            //}
         }
 
+
+        /// <summary>
+        /// Make response
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         private MessageModel GetResponse(string msg)
         {
             if (string.IsNullOrWhiteSpace(msg)) { return null; }
@@ -242,6 +220,12 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             return MessageModel.CreateModel(DateTime.Now, _server.ServerName, answer);
         }
 
+        private void Disconnect()
+        {
+            _server?.TcpListener?.Stop();            
+            _server?.ServerData.Clear();
+            _server = null;
+        }
 
     }
 }
