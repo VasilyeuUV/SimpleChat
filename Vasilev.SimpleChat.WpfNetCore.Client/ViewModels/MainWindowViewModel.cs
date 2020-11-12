@@ -111,7 +111,6 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                     }
                     Client.SendMessage(Client.UserMessage);
                     Client.UserMessage = string.Empty;
-                    //SelectedMessage = Client.Chat.Count > 0 ? Client.Chat.Last() : null;
                 },
                 obj =>
                 {

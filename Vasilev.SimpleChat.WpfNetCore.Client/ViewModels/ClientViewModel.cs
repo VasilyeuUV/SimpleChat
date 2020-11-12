@@ -157,13 +157,17 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
             Connection.TcpClient = new TcpClient();
             while (!Connection.IsConnected)
             {
+                if (Connection.TcpClient == null) { return; }
+
                 Task.Delay(1000);
-                Connection.IsConnected = ConnectToServer();    // try to connect to server
+                Connection.IsConnected = ConnectToServer();
             }
 
             _stream = Connection.TcpClient?.GetStream();
             while (Connection.IsConnected)
             {
+                if (Connection.TcpClient == null) { return; }
+
                 Task.Delay(10);
                 try
                 {
