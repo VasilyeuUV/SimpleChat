@@ -20,15 +20,16 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
         #region QuestionAnswerData
 
         internal string ServerFirstPhrase { get; } = "Приветствую в чате.\nКак Вас называть?";
+        internal string ServerDisconnectPhrase { get; } = "пока";
         internal string ServerSecondPhrase { get; } = "Что интересует, ";
-        //internal string ServerFirstPhrase { get; } = "Hello.\nWhat's is youre name?";
+
         internal string ServerErrorPhrase { get; } = "Не могу ответить.\nДанный вопрос не поддерживается.";
 
         private List<string> _helloAnswer = new List<string>() { "Привет", "Здоров", "Здравствуй", "Доброго"  };
         private List<string> _howAreYouAnswer = new List<string>() { "Нормально", "Отлично", "Сносно", "Не очень" };
         private List<string> _whatAreYouDoingAnswer = new List<string>() { "Туплю", "Думаю", "Отдыхаю", "Работаю" };
         private List<string> _willYouAnswer = new List<string>() { "Нет", "Да", "Возможно", "Не исключено" };
-        private List<string> _goodBuyAnswer = new List<string>() { "Пока", "Счастливо", "Удачи", "Всего доброго" };
+        private List<string> _goodBuyAnswer = new List<string>() { "Прощай", "Счастливо", "Удачи", "Всего доброго" };
 
         private IDictionary<string, List<string>> _qaDictionary = default;
         internal IDictionary<string, List<string>> QaDictionary => _qaDictionary ??= new Dictionary<string, List<string>>()
@@ -48,9 +49,12 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Models
         /// </summary>
         internal void Clear()
         {
-            foreach (var client in ConnectedClients)
+            if (ConnectedClients.Count > 0)
             {
-                client.Communication.CloseCommunication();
+                foreach (var client in ConnectedClients)
+                {
+                    client.Communication.CloseCommunication();
+                }
             }
 
             ConnectedClients.Clear();

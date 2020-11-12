@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Threading;
 using Vasilev.SimpleChat.ConsNetCore.Communication.Models;
-using Vasilev.SimpleChat.WpfNetCore.Client.Infrastructure.Commands;
 using Vasilev.SimpleChat.WpfNetCore.Client.Models;
 using Vasilev.SimpleChat.WpfNetCore.Client.ViewModels.Base;
 
@@ -18,7 +15,10 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
     internal class ClientViewModel : ViewModelBase
     {
         private Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
+        private NetworkStream _stream = null;
 
+        private bool _isActiveClient = true;
+        private readonly string _disconnectPhrase = "пока";
 
         #region UserName
 
@@ -61,18 +61,6 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
         #endregion
 
-        #region SelectedMessage
-        private MessageModel _selectedMessage = null;
-
-        /// <summary>
-        /// Selected Message
-        /// </summary>
-        public MessageModel SelectedMessage
-        {
-            get => _selectedMessage;
-            set => Set(ref _selectedMessage, value);
-        }
-        #endregion
 
         #region CHAT
 
@@ -125,9 +113,8 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
                     string host = Dns.GetHostName();
                     _connection.Ip = Dns.GetHostEntry(host).AddressList[0];
-                    _connection.TcpClient = new TcpClient();
 
-                    ListenServerAsync();
+                    ListenServerAsync();                    
                 }
                 return _connection;
             }
@@ -140,26 +127,40 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
 
         private async void ListenServerAsync()
-        {
-            await Task.Run(() => ListenServer()); 
+        {            
+            while (_isActiveClient)
+            {
+                UserName = "";
+                Chat.Clear();
+                await Task.Run(() => ListenServer());
+            }
+            Chat.Add(MessageModel.CreateModel(DateTime.Now, "Внимание!", "Сервер прервал соединение."));
         }
 
 
         private void ListenServer()
         {
-            while (true)
+            Connection.TcpClient = new TcpClient();
+            while (!Connection.IsConnected)
             {
-                if (!Connection.IsConnected)
-                {
-                    Connection.IsConnected = ConnectToServer();    // try to connect to server
-                    Task.Delay(1000);
-                }
-                else
-                {
-                    Task.Delay(10);
-                    GetMessage();                  
-                }
+                Task.Delay(1000);
+                Connection.IsConnected = ConnectToServer();    // try to connect to server
             }
+
+            _stream = Connection.TcpClient?.GetStream();
+            while (Connection.IsConnected)
+            {
+                Task.Delay(10);
+                try
+                {
+                    GetMessage(_stream);
+                }
+                catch (Exception ex)
+                {
+                    string err = ex.Message;
+                }                
+            }
+            Close();
         }
 
 
@@ -185,15 +186,14 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
 
 
+        #region GET/SEND MESSAGE
         /// <summary>
         /// Get server message
         /// </summary>
-        private void GetMessage()
+        private void GetMessage(NetworkStream stream)
         {
             try
             {
-                NetworkStream stream = Connection.TcpClient.GetStream();
-
                 StringBuilder response = new StringBuilder();
                 if (stream.CanRead)
                 {
@@ -212,8 +212,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                     catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message);
-                        Connection.TcpClient.Close();
-                        Connection.IsConnected = false;
+                        Disconnect();
                         return;
                     }
                 }
@@ -224,10 +223,10 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                     MessageModel msg = MessageModel.CreateModel(message);
 
                     if (msg == null) { return; }
-                    if (msg.Message == "0")
+                    if (msg.Message.ToLower() == _disconnectPhrase)
                     {
-                        msg.Message = "Сервер завершил сеанс";
-                        Disconnect();
+                        Connection.IsConnected = false;                        
+                        return;
                     }
 
                     this._dispatcher.Invoke(new Action(() => Chat.Add(msg)));
@@ -236,65 +235,64 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
             }
             catch (Exception)
             {
-                Connection.TcpClient.Close();
-                Connection.IsConnected = false;
+                Disconnect();
             }
         }
-
-
-        private void Disconnect()
-        {
-            Connection.IsConnected = false;
-        }
-
-
-
-        #endregion
-
-        #region COMMANDS
-
-        #region SendMessageCommand
-
-        private ICommand _sendMessageCommand = null;
-        public ICommand SendMessageCommand =>
-            _sendMessageCommand ??= new LambdaCommand(
-                obj =>
-                {
-                    if (string.IsNullOrWhiteSpace(UserName))
-                    {
-                        UserName = UserMessage;
-                    }
-                    SendMessage(UserMessage);
-                    UserMessage = string.Empty;
-                    SelectedMessage = Chat.Count > 0 ? Chat.Last() : null;
-                },
-                obj =>
-                {
-                    return (/*!Connection.IsConnected */
-                            /*||*/ string.IsNullOrWhiteSpace(UserMessage))
-                            ? false : true;
-                }
-                );
-
 
 
         /// <summary>
         /// Send Message
         /// </summary>
         /// <param name = "userMessage" ></ param >
-        private void SendMessage(string userMessage)
+        internal void SendMessage(string userMessage)
         {
             if (string.IsNullOrWhiteSpace(userMessage)) { return; }
 
             string msg = string.Format($"{UserName}\n{userMessage}");
-            Communication.TransmitMessage(msg);
+
+            //if (!Communication.TransmitMessage(msg))
+            //{
+            //    Disconnect();
+            //}
+
+            if (_stream.CanWrite)
+            {
+                try
+                {
+                    byte[] data = Encoding.UTF8.GetBytes(msg);
+                    _stream.Write(data, 0, data.Length);
+                }
+                catch (Exception ex)
+                {
+                    Disconnect();
+                    Environment.Exit(0); //завершение процесса
+                    //throw new Exception(ex.Message);                    
+                }
+            }
         } 
-
         #endregion
 
 
 
+        #region CLOSE_CLIENT
+
+        internal void Close()
+        {
+            _isActiveClient = false;
+            Disconnect();
+        }
+
+        private void Disconnect()
+        {            
+            Connection.TcpClient?.Close();
+            Connection.TcpClient = null;
+            Connection.IsConnected = false;            
+        } 
         #endregion
 
+
+
+
+        #endregion
     }
 }

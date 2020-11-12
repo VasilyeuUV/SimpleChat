@@ -9,6 +9,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
     {
         private TcpClient _client = null;
 
+
         /// <summary>
         /// CTOR
         /// </summary>
@@ -89,7 +90,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Communication.Models
         /// Close Communication
         /// </summary>
         public void CloseCommunication()
-        {
+        {            
             _client.Close();
         }
 

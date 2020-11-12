@@ -20,6 +20,7 @@
     </Window.InputBindings>
 
     <DockPanel>
+        
         <StatusBar DockPanel.Dock="Bottom">
            
             <!--Connected-->
@@ -79,7 +80,7 @@
                      x:Name="lbMain"
                      Margin="3"
                      ItemsSource="{Binding Client.Chat}"
-                     SelectedItem="{Binding Client.SelectedMessage}"
+                     SelectedItem="{Binding SelectedMessage}"
                      SelectionChanged="lbMain_SelectionChanged"
                      >
                 <ListBox.ItemTemplate>
@@ -139,7 +140,7 @@
                          />
                 <Button Grid.Column="1"
                         Content="Send"
-                        Command="{Binding Client.SendMessageCommand}"
+                        Command="{Binding SendMessageCommand}"
                         CommandParameter="{Binding Client.UserMessage}"
                         Margin="3"/>
             </Grid>

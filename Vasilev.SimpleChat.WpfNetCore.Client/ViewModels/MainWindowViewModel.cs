@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Input;
+using Vasilev.SimpleChat.ConsNetCore.Communication.Models;
 using Vasilev.SimpleChat.WpfNetCore.Client.Infrastructure.Commands;
 using Vasilev.SimpleChat.WpfNetCore.Client.ViewModels.Base;
 
@@ -68,11 +70,59 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
         #endregion
 
 
+        #region SelectedMessage
+        private MessageModel _selectedMessage = null;
+
+        /// <summary>
+        /// Selected Message
+        /// </summary>
+        public MessageModel SelectedMessage
+        {
+            get => _selectedMessage;
+            set => Set(ref _selectedMessage, value);
+        }
+        #endregion
+
+
+
         #region COMMANDS
+
+        #region CloseApplicationCommand
         private ICommand _closeApplicationCommand = null;
         public ICommand CloseApplicationCommand =>
-            _closeApplicationCommand ??= new LambdaCommand(obj => { Application.Current.Shutdown(); });
+            _closeApplicationCommand ??= new LambdaCommand(
+                obj =>
+                {
+                    Client.Close();
+                    Application.Current.Shutdown();
+                }
+                ); 
+        #endregion
 
+        #region SendMessageCommand
+
+        private ICommand _sendMessageCommand = null;
+        public ICommand SendMessageCommand =>
+            _sendMessageCommand ??= new LambdaCommand(
+                obj =>
+                {
+                    if (string.IsNullOrWhiteSpace(Client.UserName))
+                    {
+                        Client.UserName = Client.UserMessage;
+                    }
+                    Client.SendMessage(Client.UserMessage);
+                    Client.UserMessage = string.Empty;
+                    SelectedMessage = Client.Chat.Count > 0 ? Client.Chat.Last() : null;
+                },
+                obj =>
+                {
+                    return (!Client.Connection.IsConnected
+                            || string.IsNullOrWhiteSpace(Client.UserMessage))
+                            ? false : true;
+                }
+                );
+
+        #endregion        
 
         #endregion
 

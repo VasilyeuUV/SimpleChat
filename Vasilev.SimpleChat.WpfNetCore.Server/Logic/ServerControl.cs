@@ -84,9 +84,12 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             try
             {
                 await Task.Run(() => ListenClient(_server, client));
+                _server?.ServerData.ConnectedClients.Remove(client);
+                client.Communication.CloseCommunication();
             }
             catch (Exception ex)
             {
+                
                 string err = ex.Message;
             }
             
@@ -102,10 +105,11 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             MessageModel message = MessageModel.CreateModel(DateTime.Now, _server.ServerName, _server.ServerData.ServerFirstPhrase);
             SendMessage(client, message);
 
-            while (true)
+            bool isActive = true;
+            while (isActive)
             {
                 Task.Delay(10);
-                GetMessage(client);
+                isActive = GetMessage(client);
             }
         }
         #endregion
@@ -144,11 +148,8 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
         /// Get messages
         /// </summary>
         /// <param name="client"></param>
-        private void GetMessage(ClientModel client)
+        private bool GetMessage(ClientModel client)
         {
-
-
-
             NetworkStream stream = client.Communication.GetStream();
             StringBuilder response = new StringBuilder();
             if (stream.CanRead)
@@ -167,7 +168,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(ex.Message);
+                    return false;
                 }
             }
 
@@ -175,14 +176,14 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             if (message.Length > 0)
             {
                 MessageModel msg = MessageModel.CreateModel(DateTime.Now.ToString() + "\n" + message);
-                if (msg == null) { return; }
-               
+                MessageModel answer = null;
+                if (msg == null) { return true; }               
                 SendMessage(client, msg);
 
                 if (client.ChatHistory.Count == 2)
                 {
                     client.NickName = msg.Author;
-                    msg = MessageModel.CreateModel(
+                    answer = MessageModel.CreateModel(
                         DateTime.Now,
                         _server.ServerName, 
                         _server.ServerData.ServerSecondPhrase + client.NickName + "?"
@@ -190,10 +191,15 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                 }
                 else
                 {
-                    msg = GetResponse(msg.Message);
+                    answer = GetResponse(msg.Message);
                 }
-                SendMessage(client, msg);                
+                SendMessage(client, answer);
+                if (msg.Message.ToLower() == _server.ServerData.ServerDisconnectPhrase)
+                {
+                    return false;
+                }
             }
+            return true;
         }
 
 
@@ -220,10 +226,11 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             return MessageModel.CreateModel(DateTime.Now, _server.ServerName, answer);
         }
 
+
         private void Disconnect()
         {
-            _server?.TcpListener?.Stop();            
             _server?.ServerData.Clear();
+            _server?.TcpListener?.Stop();  
             _server = null;
         }
 
