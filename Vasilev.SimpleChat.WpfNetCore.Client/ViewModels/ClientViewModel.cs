@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -61,6 +62,18 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
         #endregion
 
+        #region SelectedMessage
+        private MessageModel _selectedMessage = null;
+
+        /// <summary>
+        /// Selected Message
+        /// </summary>
+        public MessageModel SelectedMessage
+        {
+            get => _selectedMessage;
+            set => Set(ref _selectedMessage, value);
+        }
+        #endregion
 
         #region CHAT
 
@@ -135,6 +148,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                 await Task.Run(() => ListenServer());
             }
             Chat.Add(MessageModel.CreateModel(DateTime.Now, "Внимание!", "Сервер прервал соединение."));
+            SelectedMessage = Chat.Last();
         }
 
 
@@ -197,7 +211,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                 StringBuilder response = new StringBuilder();
                 if (stream.CanRead)
                 {
-                    byte[] data = new byte[256]; // буфер для получаемых данных
+                    byte[] data = new byte[256]; 
                     int bytesLength = 0;
 
                     try
@@ -229,8 +243,11 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                         return;
                     }
 
-                    this._dispatcher.Invoke(new Action(() => Chat.Add(msg)));
-
+                    this._dispatcher.Invoke(new Action(() => 
+                    { 
+                        Chat.Add(msg);
+                        SelectedMessage = Chat.Last();
+                    }));
                 }
             }
             catch (Exception)
@@ -250,11 +267,6 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
 
             string msg = string.Format($"{UserName}\n{userMessage}");
 
-            //if (!Communication.TransmitMessage(msg))
-            //{
-            //    Disconnect();
-            //}
-
             if (_stream.CanWrite)
             {
                 try
@@ -265,8 +277,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                 catch (Exception ex)
                 {
                     Disconnect();
-                    Environment.Exit(0); //завершение процесса
-                    //throw new Exception(ex.Message);                    
+                    Environment.Exit(0);              
                 }
             }
         } 

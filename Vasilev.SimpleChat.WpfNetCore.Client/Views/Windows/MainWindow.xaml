@@ -9,6 +9,7 @@
         Height="500" Width="400"
         xmlns:vm="clr-namespace:Vasilev.SimpleChat.WpfNetCore.Client.ViewModels"  
         xmlns:cmd="clr-namespace:Vasilev.SimpleChat.WpfNetCore.Client.Infrastructure.Commands"
+        FocusManager.FocusedElement="{Binding ElementName=tbxMain}"
         >
         
     <Window.DataContext>
@@ -80,7 +81,7 @@
                      x:Name="lbMain"
                      Margin="3"
                      ItemsSource="{Binding Client.Chat}"
-                     SelectedItem="{Binding SelectedMessage}"
+                     SelectedItem="{Binding Client.SelectedMessage}"
                      SelectionChanged="lbMain_SelectionChanged"
                      >
                 <ListBox.ItemTemplate>
@@ -130,6 +131,7 @@
                 </Grid.RowDefinitions>
 
                 <TextBox Grid.Column="0" 
+                         x:Name="tbxMain"
                          Text="{Binding Client.UserMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          MaxLength="1000"
                          TextWrapping="Wrap"
@@ -137,7 +139,14 @@
                          ScrollViewer.VerticalScrollBarVisibility="Auto"
                          MaxHeight="65"
                          Margin="3" 
-                         />
+                         >
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Modifiers="Ctrl" 
+                                    Command="{Binding SendMessageCommand}"
+                                    CommandParameter="{Binding Client.UserMessage}"
+                                    />
+                    </TextBox.InputBindings>
+                </TextBox>
                 <Button Grid.Column="1"
                         Content="Send"
                         Command="{Binding SendMessageCommand}"

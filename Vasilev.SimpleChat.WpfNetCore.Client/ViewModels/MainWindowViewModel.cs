@@ -70,19 +70,18 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
         #endregion
 
 
-        #region SelectedMessage
-        private MessageModel _selectedMessage = null;
+        #region IsFocusedTbx
+        private bool _isFocusedTbx = true;
 
         /// <summary>
-        /// Selected Message
+        /// Focused TextBox
         /// </summary>
-        public MessageModel SelectedMessage
+        public bool IsFocusedTbx
         {
-            get => _selectedMessage;
-            set => Set(ref _selectedMessage, value);
+            get => _isFocusedTbx;
+            set => Set(ref _isFocusedTbx, value);
         }
         #endregion
-
 
 
         #region COMMANDS
@@ -112,7 +111,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                     }
                     Client.SendMessage(Client.UserMessage);
                     Client.UserMessage = string.Empty;
-                    SelectedMessage = Client.Chat.Count > 0 ? Client.Chat.Last() : null;
+                    //SelectedMessage = Client.Chat.Count > 0 ? Client.Chat.Last() : null;
                 },
                 obj =>
                 {
@@ -122,7 +121,7 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                 }
                 );
 
-        #endregion        
+        #endregion
 
         #endregion
 
