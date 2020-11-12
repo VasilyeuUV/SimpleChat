@@ -25,9 +25,6 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.Models
             }
         }
 
-        
-
-
 
         #region CONNECT_CHANGED_EVENT
 

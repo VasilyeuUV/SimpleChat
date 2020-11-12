@@ -6,8 +6,6 @@ using Vasilev.SimpleChat.ConsNetCore.Server.Logic;
 
 namespace Vasilev.SimpleChat.ConsNetCore.Menu
 {
-    //internal delegate void method();
-
     internal class ServerManager : MenuBase, IDisposable
     {     
         private ServerControl _serverControl = null;

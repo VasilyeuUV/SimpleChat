@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Vasilev.SimpleChat.ConsNetCore.Communication.Models;
@@ -70,20 +71,6 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
         #endregion
 
 
-        #region IsFocusedTbx
-        private bool _isFocusedTbx = true;
-
-        /// <summary>
-        /// Focused TextBox
-        /// </summary>
-        public bool IsFocusedTbx
-        {
-            get => _isFocusedTbx;
-            set => Set(ref _isFocusedTbx, value);
-        }
-        #endregion
-
-
         #region COMMANDS
 
         #region CloseApplicationCommand
@@ -107,7 +94,8 @@ namespace Vasilev.SimpleChat.WpfNetCore.Client.ViewModels
                 {
                     if (string.IsNullOrWhiteSpace(Client.UserName))
                     {
-                        Client.UserName = Client.UserMessage;
+                        Client.UserName = Client.UserMessage.Trim().Replace(Environment.NewLine, " ");
+                        Client.UserMessage = Client.UserName;
                     }
                     Client.SendMessage(Client.UserMessage);
                     Client.UserMessage = string.Empty;

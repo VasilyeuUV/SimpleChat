@@ -175,14 +175,16 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
             string message = response.ToString();
             if (message.Length > 0)
             {
-                MessageModel msg = MessageModel.CreateModel(DateTime.Now.ToString() + "\n" + message);
-                MessageModel answer = null;
+                MessageModel msg = MessageModel.CreateModel(DateTime.Now.ToString() + "\n" + message);                
                 if (msg == null) { return true; }               
                 SendMessage(client, msg);
 
+                Task.Delay(1000);
+
+                MessageModel answer = null;
                 if (client.ChatHistory.Count == 2)
                 {
-                    client.NickName = msg.Author;
+                    client.NickName = msg.Author.Trim().Replace(Environment.NewLine, " ");
                     answer = MessageModel.CreateModel(
                         DateTime.Now,
                         _server.ServerName, 
@@ -194,6 +196,7 @@ namespace Vasilev.SimpleChat.ConsNetCore.Server.Logic
                     answer = GetResponse(msg.Message);
                 }
                 SendMessage(client, answer);
+
                 if (msg.Message.ToLower() == _server.ServerData.ServerDisconnectPhrase)
                 {
                     return false;

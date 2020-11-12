@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NETCOREAPP;NETCOREAPP3_1
 E:\_projects\tests\SimpleChat\Vasilev.SimpleChat.WpfNetCore.Client\App.xaml
-3-1288688261
+2-652053914
 
-141787026291
+12-1722491291
 193-241049831
-Resources\Icons\GeneralIconsDictionary.xaml;Resources\Themes\ThemeDictionary.xaml;Views\Windows\MainWindow.xaml;
+Resources\Themes\ThemeDictionary.xaml;Views\Windows\MainWindow.xaml;
 
-True
+False
 

@@ -12,7 +12,6 @@ namespace Vasilev.SimpleChat.ConsNetCore.Menu
     {
         private delegate int action(int index);
 
-        //private List<KeyValuePair<method, string>> _menuItems;
         private Dictionary<ConsoleKey, action> _keyActions = default;
         private List<KeyValuePair<MenuBase.method, string>> _menuItems;
 
